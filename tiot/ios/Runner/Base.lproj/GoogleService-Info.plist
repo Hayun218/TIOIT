@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>5127030581-lu0duics0j1ebt5042a92qei3frnt7f6.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.5127030581-lu0duics0j1ebt5042a92qei3frnt7f6</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAsEC9mNZA2Y8tAmD9buh9Dj3eoPsGtRac</string>
+	<key>GCM_SENDER_ID</key>
+	<string>5127030581</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>lydia.tiot</string>
+	<key>PROJECT_ID</key>
+	<string>tiot-2f18b</string>
+	<key>STORAGE_BUCKET</key>
+	<string>tiot-2f18b.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:5127030581:ios:5a6ae28d05742adbb26e7c</string>
+</dict>
+</plist>
