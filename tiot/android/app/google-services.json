@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "5127030581",
+    "project_id": "tiot-2f18b",
+    "storage_bucket": "tiot-2f18b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:5127030581:android:77addf0938eaeb8eb26e7c",
+        "android_client_info": {
+          "package_name": "lydia.tiot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "5127030581-cqdvn5s86qnjpl67p4mgkql9ppoi9dji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdZXDXk1emUrQiQSIaCetR_CwjIQFk00c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "5127030581-cqdvn5s86qnjpl67p4mgkql9ppoi9dji.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "5127030581-lu0duics0j1ebt5042a92qei3frnt7f6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "lydia.tiot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
