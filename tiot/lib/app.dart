@@ -4,6 +4,7 @@ import 'package:tiot/todo.dart';
 import 'dashboard.dart';
 import 'login.dart';
 import 'todo.dart';
+import 'first_screen.dart';
 
 class TioT extends StatelessWidget {
   const TioT({Key? key}) : super(key: key);
@@ -12,8 +13,7 @@ class TioT extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TioT',
-      home: ToDoPage(),
-      initialRoute: '/todo',
+      home: FirstScreen(),
       routes: {
         '/todo': (context) => ToDoPage(),
         '/dashboard': (context) => DashboardPage(),

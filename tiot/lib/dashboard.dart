@@ -1,8 +1,69 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class DashboardPage extends StatelessWidget {
+BottomAppBar appBar(BuildContext context) {
+  return BottomAppBar(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        // TODO: modify
+        IconButton(
+          onPressed: () => Navigator.pushNamed(context, '/dashboard'),
+          icon: Icon(Icons.home_outlined),
+        ),
+        IconButton(
+          onPressed: () => Navigator.pushNamed(context, '/home'),
+          icon: Icon(Icons.fact_check_outlined),
+        ),
+        IconButton(
+          onPressed: () => Navigator.pushNamed(context, '/home'),
+          icon: Icon(Icons.note_alt_outlined),
+        ),
+        IconButton(
+          onPressed: () => Navigator.pushNamed(context, '/home'),
+          icon: Icon(Icons.calendar_today_outlined),
+        ),
+        IconButton(
+          onPressed: () => Navigator.pushNamed(context, '/home'),
+          icon: Icon(Icons.account_circle_outlined),
+        ),
+      ],
+    ),
+  );
+}
+
+var today = DateTime.now();
+String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
+
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({Key? key}) : super(key: key);
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      bottomNavigationBar: appBar(context),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 150, 0, 0),
+            child: Center(
+              child: Text(
+                todayDate + "\n Dashboard Page",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
