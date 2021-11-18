@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'setting.dart';
 
 BottomAppBar appBar(BuildContext context) {
   return BottomAppBar(
@@ -63,7 +64,14 @@ class _BadgedPageState extends State<BadgedPage> {
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SettingsScreen(),
+                ),
+              );
+            },
             color: Colors.black,
           )
         ],
