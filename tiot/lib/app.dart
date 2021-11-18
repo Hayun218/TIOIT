@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tiot/todo.dart';
 
 import 'dashboard.dart';
+import 'diary.dart';
 import 'login.dart';
 import 'todo.dart';
 import 'first_screen.dart';
@@ -17,6 +18,7 @@ class TioT extends StatelessWidget {
       routes: {
         '/todo': (context) => ToDoPage(),
         '/dashboard': (context) => DashboardPage(),
+        '/diary': (conetext) => DiaryPage(),
       },
       //   onGenerateRoute: _getRoute,
     );
