@@ -52,6 +52,24 @@ Future<void> deleteToDo(data) {
   );
 }
 
+Future<void> saveToDo(
+    TextEditingController time, TextEditingController content, int priority) {
+  return toDo.doc().set({
+    'time': time.text,
+    'content': content.text,
+    'priority': priority,
+  }).then((value) => print("Data Added"));
+}
+
+Future<void> updateTodo(data, TextEditingController time,
+    TextEditingController content, int priority) {
+  return toDo.doc(data.id).update({
+    'time': time.text,
+    'content': content.text,
+    'priority': priority,
+  }).then((value) => print("Data Updated"));
+}
+
 void showContentDialog(context, data) {
   showDialog(
       context: context,
@@ -71,6 +89,10 @@ void showContentDialog(context, data) {
                   Text("Priority: "),
                   if (data['priority'] == 1)
                     Icon(Icons.circle, color: Colors.red),
+                  if (data['priority'] == 2)
+                    Icon(Icons.circle, color: Colors.blue),
+                  if (data['priority'] == 3)
+                    Icon(Icons.circle, color: Colors.green),
                 ],
               ),
               Text("Content: " + data['content']),
@@ -88,6 +110,7 @@ void showContentDialog(context, data) {
               child: new Text("수정"),
               onPressed: () {
                 Navigator.pop(context);
+                addContentDialog(context, data);
               },
             ),
           ],
@@ -96,7 +119,16 @@ void showContentDialog(context, data) {
 }
 
 TextEditingController _time = TextEditingController();
-void addContentDialog(context) {
+TextEditingController _content = TextEditingController();
+int _value = 1;
+
+void addContentDialog(context, data) {
+  if (data != null) {
+    _content = TextEditingController(text: data['content']);
+    _time = TextEditingController(text: data['time']);
+    _value = data['priority'];
+  }
+  myProvider provider = myProvider();
   showDialog(
       context: context,
       barrierDismissible: true,
@@ -105,44 +137,94 @@ void addContentDialog(context) {
           title: Center(child: Text("To Do")),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          content: Flexible(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: [
-                    const Text("Time: "),
-                    TextField(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: [
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    child: const Text("Time: "),
+                  ),
+                  Expanded(
+                    child: TextField(
                       controller: _time,
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text("Priority: "),
-                  ],
-                ),
-                Text("Content: "),
-              ],
-            ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Text("Priority: "),
+                  DropdownButton(
+                    value: _value,
+                    items: const [
+                      DropdownMenuItem(
+                        child: Text("가장 중요"),
+                        value: 1,
+                      ),
+                      DropdownMenuItem(
+                        child: Text("중요"),
+                        value: 2,
+                      ),
+                      DropdownMenuItem(
+                        child: Text("일반"),
+                        value: 3,
+                      )
+                    ],
+                    onChanged: (value) {
+                      provider.setPriority(value);
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Text("Content: "),
+                  Expanded(
+                    child: TextField(
+                      controller: _content,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
           actions: <Widget>[
             FlatButton(
               child: new Text("취소"),
               onPressed: () {
+                _time.clear();
+                _content.clear();
+
                 Navigator.pop(context);
               },
             ),
             FlatButton(
               child: new Text("저장"),
               onPressed: () {
+                if (data == null) saveToDo(_time, _content, _value);
+                updateTodo(data, _time, _content, _value);
+                _time.clear();
+                _content.clear();
+
                 Navigator.pop(context);
               },
             ),
           ],
         );
       });
+}
+
+class myProvider with ChangeNotifier {
+  void setPriority(value) {
+    print(value);
+    _value = value as int;
+    notifyListeners();
+  }
 }
 
 var today = DateTime.now();
@@ -238,7 +320,7 @@ class _ToDoPageState extends State<ToDoPage> {
                           );
                         }),
                     IconButton(
-                        onPressed: () => addContentDialog(context),
+                        onPressed: () => addContentDialog(context, null),
                         icon: Icon(Icons.add))
                   ],
                 ),
