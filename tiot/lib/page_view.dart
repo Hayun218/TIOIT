@@ -16,7 +16,7 @@ class Pages extends StatefulWidget {
 
 class _PagesState extends State<Pages> {
   final controller = PageController(
-    initialPage: 1,
+    initialPage: 0,
   );
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'languages_screen.dart';
 
@@ -9,6 +11,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  FirebaseAuth auth = FirebaseAuth.instance;
   bool lockInBackground = true;
   bool notificationsEnabled = true;
 
@@ -68,7 +71,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           tiles: [
             SettingsTile(title: 'Phone number', leading: Icon(Icons.phone)),
             SettingsTile(title: 'Email', leading: Icon(Icons.email)),
-            SettingsTile(title: 'Sign out', leading: Icon(Icons.exit_to_app)),
+            SettingsTile(
+              title: 'Sign out',
+              leading: Icon(Icons.exit_to_app),
+              onPressed: (context) {
+                auth.signOut();
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
         SettingsSection(
