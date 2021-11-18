@@ -42,6 +42,7 @@ dependencies:
   path_provider: ^2.0.6
   http: ^0.13.4
   date_format: ^2.0.4
+  settings_ui: ^1.0.0
 
   shrine_images: ^2.0.1
 
