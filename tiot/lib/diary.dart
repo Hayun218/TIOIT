@@ -17,7 +17,7 @@ BottomAppBar appBar(BuildContext context) {
         ),
         IconButton(
           onPressed: () => Navigator.pushNamed(context, '/home'),
-          icon: Icon(Icons.note_alt_outlined),
+          icon: Icon(Icons.note_alt),
         ),
         IconButton(
           onPressed: () => Navigator.pushNamed(context, '/home'),

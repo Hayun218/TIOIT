@@ -30,7 +30,7 @@ BottomAppBar appBar(BuildContext context) {
           icon: Icon(Icons.calendar_today_outlined),
         ),
         IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/home'),
+          onPressed: () => Navigator.pushNamed(context, '/badge'),
           icon: Icon(Icons.account_circle_outlined),
         ),
       ],
@@ -60,7 +60,7 @@ void addContentDialog(context) {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: const <Widget>[
               Text(
                 "Dialog Content",
               ),
