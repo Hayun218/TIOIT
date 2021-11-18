@@ -2,37 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'setting.dart';
 
-BottomAppBar appBar(BuildContext context) {
-  return BottomAppBar(
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        // TODO: modify
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/dashboard'),
-          icon: Icon(Icons.home_outlined),
-        ),
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/home'),
-          icon: Icon(Icons.fact_check_outlined),
-        ),
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/home'),
-          icon: Icon(Icons.note_alt_outlined),
-        ),
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/home'),
-          icon: Icon(Icons.calendar_today_outlined),
-        ),
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/home'),
-          icon: Icon(Icons.account_circle_outlined),
-        ),
-      ],
-    ),
-  );
-}
-
 var today = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
 
