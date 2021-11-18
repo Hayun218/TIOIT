@@ -76,7 +76,6 @@ class _BadgedPageState extends State<BadgedPage> {
           )
         ],
       ),
-      bottomNavigationBar: appBar(context),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
