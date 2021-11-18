@@ -33,22 +33,6 @@ class _LoginPageState extends State<LoginPage> {
     return await auth.signInWithCredential(credential);
   }
 
-//  TODO: email sign in
-//  Future<void> signInWithEmailAndPassword(
-//    String email,
-//    String password,
-//    void Function(FirebaseAuthException e) errorCallback,
-//  ) async {
-//    try {
-//      await FirebaseAuth.instance.signInWithEmailAndPassword(
-//        email: email,
-//        password: password,
-//      );
-//    } on FirebaseAuthException catch (e) {
-//      errorCallback(e);
-//    }
-//  }
-
   // Collection 에 User 정보 추가하기
   Future addGoogleUser(UserCredential credential) {
     User? user = credential.user;
@@ -56,15 +40,6 @@ class _LoginPageState extends State<LoginPage> {
     return FirebaseFirestore.instance.collection('user').doc(user!.uid).set({
       'email': user.email,
       'name': user.displayName,
-      'status_message': "I promise to take the test honestly before GOD.",
-      'uid': user.uid,
-    });
-  }
-
-  Future addAnonUser(UserCredential credential) {
-    User? user = credential.user;
-    // Write 정보
-    return FirebaseFirestore.instance.collection('user').doc(user!.uid).set({
       'status_message': "I promise to take the test honestly before GOD.",
       'uid': user.uid,
     });
@@ -111,23 +86,6 @@ class _LoginPageState extends State<LoginPage> {
                     }
                   });
                 },
-              ),
-              SignInButtonBuilder(
-                text: 'Email',
-                icon: Icons.email,
-                onPressed: () async {
-                  credential = await signInWithGoogle();
-                  FirebaseFirestore.instance
-                      .collection('user')
-                      .where('uid', isEqualTo: credential.user!.uid)
-                      .get()
-                      .then((value) {
-                    if (value.docs.isEmpty) {
-                      addGoogleUser(credential);
-                    }
-                  });
-                },
-                backgroundColor: Colors.blue,
               ),
             ],
           ),

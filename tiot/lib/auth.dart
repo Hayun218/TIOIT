@@ -21,8 +21,7 @@ class Authentication extends StatelessWidget {
     switch (loginState) {
       case LoginState.loggedOut:
         print("logged out");
-        // TODO: LoginPage()
-        return const Pages();
+        return const LoginPage();
       case LoginState.loggedIn:
         print("logged in");
         return const Pages();

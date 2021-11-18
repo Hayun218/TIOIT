@@ -46,6 +46,28 @@ class _BadgedPageState extends State<BadgedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Center(
+          child: Text(
+            "Badge",
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+        ),
+        backgroundColor: Colors.white,
+        bottomOpacity: 0,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {},
+            color: Colors.black,
+          )
+        ],
+      ),
       bottomNavigationBar: appBar(context),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,7 +77,7 @@ class _BadgedPageState extends State<BadgedPage> {
             child: Center(
               child: Text(
                 todayDate + "\n Badge Page",
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
