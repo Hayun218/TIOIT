@@ -7,37 +7,6 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-BottomAppBar appBar(BuildContext context) {
-  return BottomAppBar(
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        // TODO: modify
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/dashboard'),
-          icon: Icon(Icons.home_outlined),
-        ),
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/todo'),
-          icon: Icon(Icons.fact_check),
-        ),
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/diary'),
-          icon: Icon(Icons.note_alt_outlined),
-        ),
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/home'),
-          icon: Icon(Icons.calendar_today_outlined),
-        ),
-        IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/badge'),
-          icon: Icon(Icons.account_circle_outlined),
-        ),
-      ],
-    ),
-  );
-}
-
 User user = FirebaseAuth.instance.currentUser!;
 CollectionReference toDo = FirebaseFirestore.instance
     .collection('user')
@@ -247,7 +216,6 @@ class _ToDoPageState extends State<ToDoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: appBar(context),
       body: Stack(
         children: [
           Align(
