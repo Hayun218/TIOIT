@@ -12,7 +12,7 @@ BottomAppBar appBar(BuildContext context) {
           icon: Icon(Icons.home_outlined),
         ),
         IconButton(
-          onPressed: () => Navigator.pushNamed(context, '/home'),
+          onPressed: () => Navigator.pushNamed(context, '/todo'),
           icon: Icon(Icons.fact_check_outlined),
         ),
         IconButton(
