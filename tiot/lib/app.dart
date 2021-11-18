@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiot/badge.dart';
 import 'package:tiot/todo.dart';
 
 import 'dashboard.dart';
@@ -18,7 +19,8 @@ class TioT extends StatelessWidget {
       routes: {
         '/todo': (context) => ToDoPage(),
         '/dashboard': (context) => DashboardPage(),
-        '/diary': (conetext) => DiaryPage(),
+        '/diary': (context) => DiaryPage(),
+        '/badge': (context) => BadgedPage(),
       },
       //   onGenerateRoute: _getRoute,
     );
