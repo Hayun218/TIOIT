@@ -37,10 +37,13 @@ class _LoginPageState extends State<LoginPage> {
   Future addGoogleUser(UserCredential credential) {
     User? user = credential.user;
     // Write 정보
-    return FirebaseFirestore.instance.collection('user').doc(user!.uid).set({
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(user!.uid)
+        .collection('toDo');
+    return FirebaseFirestore.instance.collection('user').doc(user.uid).set({
       'email': user.email,
       'name': user.displayName,
-      'status_message': "I promise to take the test honestly before GOD.",
       'uid': user.uid,
     });
   }

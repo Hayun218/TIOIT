@@ -38,37 +38,104 @@ BottomAppBar appBar(BuildContext context) {
   );
 }
 
-TextEditingController todo = TextEditingController();
+User user = FirebaseAuth.instance.currentUser!;
+CollectionReference toDo = FirebaseFirestore.instance
+    .collection('user')
+    .doc(user.uid)
+    .collection('toDo');
 
-void addContentDialog(context) {
+Future<void> deleteToDo(data) {
+  return toDo.doc(data.id).delete().then(
+    (value) {
+      print('Data Deleted');
+    },
+  );
+}
+
+void showContentDialog(context, data) {
   showDialog(
       context: context,
-      //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
-          // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+          title: Center(child: Text("To Do")),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          //Dialog Main Title
-          title: Column(
-            children: <Widget>[
-              new Text("Dialog Title"),
-            ],
-          ),
-          //
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const <Widget>[
-              Text(
-                "Dialog Content",
+            children: <Widget>[
+              Text("Time: " + data['time']),
+              Row(
+                children: [
+                  Text("Priority: "),
+                  if (data['priority'] == 1)
+                    Icon(Icons.circle, color: Colors.red),
+                ],
               ),
+              Text("Content: " + data['content']),
             ],
           ),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text("확인"),
+            FlatButton(
+              child: new Text("삭제"),
+              onPressed: () {
+                deleteToDo(data);
+                Navigator.pop(context);
+              },
+            ),
+            FlatButton(
+              child: new Text("수정"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      });
+}
+
+TextEditingController _time = TextEditingController();
+void addContentDialog(context) {
+  showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(child: Text("To Do")),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          content: Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: [
+                    const Text("Time: "),
+                    TextField(
+                      controller: _time,
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text("Priority: "),
+                  ],
+                ),
+                Text("Content: "),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: new Text("취소"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            FlatButton(
+              child: new Text("저장"),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -80,7 +147,6 @@ void addContentDialog(context) {
 
 var today = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
-final User user = FirebaseAuth.instance.currentUser!;
 
 class ToDoPage extends StatefulWidget {
   const ToDoPage({Key? key}) : super(key: key);
@@ -116,68 +182,66 @@ class _ToDoPageState extends State<ToDoPage> {
           Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
             Container(
               margin: EdgeInsets.fromLTRB(0, 150, 0, 0),
-              child: Center(
-                child: Text(
-                  todayDate,
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
+              child: Text(
+                todayDate,
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
               ),
             ),
             Center(
               child: Container(
                 width: 280,
-                margin: EdgeInsets.all(30),
+                margin: EdgeInsets.all(40),
                 decoration: BoxDecoration(
                   border: Border.all(),
                 ),
-                child: StreamBuilder(
-                    stream: toDoList,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<dynamic> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      }
-                      if (!snapshot.hasData) return Text('loading');
-                      return Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.check_box_outline_blank),
-                                onPressed: () {},
-                              ),
-                              TextButton(
-                                onPressed: () => addContentDialog(context),
-                                child: Text(
-                                  'Figma 작성하기',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.black),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.check_box_outline_blank),
-                                onPressed: () {},
-                              ),
-                              Text(
-                                'Figma 작성하기',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    }),
+                child: Column(
+                  children: [
+                    StreamBuilder(
+                        stream: toDoList,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          }
+                          if (!snapshot.hasData)
+                            return Text('Please fill your list');
+
+                          return ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: snapshot.data.docs.length,
+                            itemBuilder: (context, index) {
+                              DocumentSnapshot data = snapshot.data.docs[index];
+
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.check_box_outline_blank),
+                                    onPressed: () => null,
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        showContentDialog(context, data),
+                                    child: Text(
+                                      data['content'],
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.black),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }),
+                    IconButton(
+                        onPressed: () => addContentDialog(context),
+                        icon: Icon(Icons.add))
+                  ],
+                ),
               ),
             ),
           ]),
