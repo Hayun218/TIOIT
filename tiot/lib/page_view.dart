@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tiot/page_view_state.dart';
+import 'package:provider/provider.dart';
 
-import 'todo.dart';
-import 'dashboard.dart';
-import 'diary.dart';
-import 'badge.dart';
+import 'main.dart';
+import 'page_view_state.dart';
 
 final controller = PageController(
   initialPage: 0,
@@ -59,22 +59,11 @@ class Pages extends StatefulWidget {
 class _PagesState extends State<Pages> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: appBar(context),
-      body: PageView(
-        controller: controller,
-        onPageChanged: (index) {
-          setState(() {
-            pageChanged = index;
-          });
-        },
-        children: [
-          DashboardPage(),
-          DiaryPage(),
-          ToDoPage(),
-          DiaryPage(),
-          BadgedPage(),
-        ],
+    return Consumer<BottomAppBarProvider>(
+      builder: (context, appState, _) => HighlightPage(
+        pageState: appState.pageState,
+        pageFlow: appState.pageFlow,
+        signOut: appState.signOut,
       ),
     );
   }

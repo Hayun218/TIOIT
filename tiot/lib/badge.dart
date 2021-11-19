@@ -6,7 +6,8 @@ var today = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
 
 class BadgedPage extends StatefulWidget {
-  const BadgedPage({Key? key}) : super(key: key);
+  final Function() signOut;
+  const BadgedPage({Key? key, required this.signOut}) : super(key: key);
 
   @override
   State<BadgedPage> createState() => _BadgedPageState();
@@ -37,7 +38,7 @@ class _BadgedPageState extends State<BadgedPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SettingsScreen(),
+                  builder: (context) => SettingsScreen(signOut: widget.signOut),
                 ),
               );
             },

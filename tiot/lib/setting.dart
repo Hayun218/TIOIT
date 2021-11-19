@@ -6,6 +6,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'languages_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
+  final Function() signOut;
+
+  const SettingsScreen({Key? key, required this.signOut}) : super(key: key);
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -77,6 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onPressed: (context) {
                 auth.signOut();
                 Navigator.pop(context);
+                widget.signOut();
               },
             ),
           ],
