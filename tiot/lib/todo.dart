@@ -229,72 +229,76 @@ class _ToDoPageState extends State<ToDoPage> {
               ),
             ),
           ),
-          Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            Container(
-              margin: EdgeInsets.fromLTRB(0, 150, 0, 0),
-              child: Text(
-                todayDate,
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
-              ),
-            ),
-            Center(
-              child: Container(
-                width: 280,
-                margin: EdgeInsets.all(40),
-                decoration: BoxDecoration(
-                  border: Border.all(),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 150, 0, 0),
+                child: Text(
+                  todayDate,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
                 ),
-                child: Column(
-                  children: [
-                    StreamBuilder(
-                        stream: toDoList,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<dynamic> snapshot) {
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          }
-                          if (!snapshot.hasData)
-                            return Text('Please fill your list');
+              ),
+              Center(
+                child: Container(
+                  width: 280,
+                  margin: EdgeInsets.all(40),
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                  ),
+                  child: Column(
+                    children: [
+                      StreamBuilder(
+                          stream: toDoList,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            }
+                            if (!snapshot.hasData)
+                              return Text('Please fill your list');
 
-                          return ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemCount: snapshot.data.docs.length,
-                            itemBuilder: (context, index) {
-                              DocumentSnapshot data = snapshot.data.docs[index];
+                            return ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot data =
+                                    snapshot.data.docs[index];
 
-                              return Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  IconButton(
-                                    icon: Icon(Icons.check_box_outline_blank),
-                                    onPressed: () => null,
-                                  ),
-                                  TextButton(
-                                    onPressed: () =>
-                                        showContentDialog(context, data),
-                                    child: Text(
-                                      data['content'],
-                                      style: TextStyle(
-                                          fontSize: 16, color: Colors.black),
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.check_box_outline_blank),
+                                      onPressed: () => null,
                                     ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }),
-                    IconButton(
-                        onPressed: () => addContentDialog(context, null),
-                        icon: Icon(Icons.add))
-                  ],
+                                    TextButton(
+                                      onPressed: () =>
+                                          showContentDialog(context, data),
+                                      child: Text(
+                                        data['content'],
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.black),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }),
+                      IconButton(
+                          onPressed: () => addContentDialog(context, null),
+                          icon: Icon(Icons.add))
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ]),
+            ],
+          ),
         ],
       ),
     );
