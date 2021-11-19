@@ -65,7 +65,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               CircleAvatar(
                 radius: 25,
                 backgroundImage: NetworkImage(currentUser.photoURL.toString()),
-              )
+              ),
             ],
           ),
           SizedBox(height: 10),
