@@ -16,13 +16,6 @@ class TioT extends StatelessWidget {
     return MaterialApp(
       title: 'TioT',
       home: FirstScreen(),
-      routes: {
-        '/todo': (context) => ToDoPage(),
-        '/dashboard': (context) => DashboardPage(),
-        '/diary': (context) => DiaryPage(),
-        '/badge': (context) => BadgedPage(),
-      },
-      //   onGenerateRoute: _getRoute,
     );
   }
 
