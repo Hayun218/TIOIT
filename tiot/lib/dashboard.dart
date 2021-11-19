@@ -1,4 +1,8 @@
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,23 +28,43 @@ class _DashboardPageState extends State<DashboardPage> {
       .snapshots();
   @override
   Widget build(BuildContext context) {
+    User? currentUser = FirebaseAuth.instance.currentUser;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          margin: EdgeInsets.fromLTRB(0, 150, 0, 0),
-          child: Center(
-            child: Text(
-              todayDate + "\n Dashboard Page",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(
+                "Hello, " + currentUser!.displayName.toString(),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+              ),
+              CircleAvatar(
+                radius: 25,
+                backgroundImage: NetworkImage(currentUser.photoURL.toString()),
+              ),
+            ],
+          ),
+        ),
+        Center(
+          child: Text(
+            todayDate + "\n Dashboard Page\n문구 입력",
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
             ),
           ),
         ),
         Divider(),
-        SizedBox(height: 300),
+        SizedBox(
+          height: 300,
+          child: Center(
+            child: Text("pie chart"),
+          ),
+        ),
         Divider(),
         Center(
           child: Container(
