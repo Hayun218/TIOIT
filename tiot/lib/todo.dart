@@ -349,55 +349,52 @@ class _ToDoPageState extends State<ToDoPage> {
                   decoration: BoxDecoration(
                     border: Border.all(),
                   ),
-                  child: Flexible(
-                    child: Column(
-                      children: [
-                        StreamBuilder(
-                            stream: toDoList,
-                            builder: (BuildContext context,
-                                AsyncSnapshot<dynamic> snapshot) {
-                              if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              }
-                              if (!snapshot.hasData)
-                                return Text('Please fill your list');
+                  child: Column(
+                    children: [
+                      StreamBuilder(
+                          stream: toDoList,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            }
+                            if (!snapshot.hasData)
+                              return Text('Please fill your list');
 
-                              return ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                itemCount: snapshot.data.docs.length,
-                                itemBuilder: (context, index) {
-                                  DocumentSnapshot data =
-                                      snapshot.data.docs[index];
+                            return ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot data =
+                                    snapshot.data.docs[index];
 
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      IconButton(
-                                        icon: selectIcon(data),
-                                        onPressed: () =>
-                                            showStatus(context, data),
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    IconButton(
+                                      icon: selectIcon(data),
+                                      onPressed: () =>
+                                          showStatus(context, data),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          showContentDialog(context, data),
+                                      child: Text(
+                                        data['content'],
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.black),
                                       ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            showContentDialog(context, data),
-                                        child: Text(
-                                          data['content'],
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            }),
-                        IconButton(
-                            onPressed: () => addContentDialog(context, null),
-                            icon: Icon(Icons.add))
-                      ],
-                    ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }),
+                      IconButton(
+                          onPressed: () => addContentDialog(context, null),
+                          icon: Icon(Icons.add))
+                    ],
                   ),
                 ),
               ),
