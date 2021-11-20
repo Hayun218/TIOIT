@@ -12,6 +12,8 @@ CollectionReference toDo = FirebaseFirestore.instance
     .collection('user')
     .doc(user.uid)
     .collection('toDo');
+var today = DateTime.now();
+String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
 
 Future<void> deleteToDo(data) {
   return toDo.doc(data.id).delete().then(
@@ -24,9 +26,11 @@ Future<void> deleteToDo(data) {
 Future<void> saveToDo(
     TextEditingController time, TextEditingController content, int priority) {
   return toDo.doc().set({
+    'date': todayDate,
     'time': time.text,
     'content': content.text,
     'priority': priority,
+    'status': "Incomplete",
   }).then((value) => print("Data Added"));
 }
 
@@ -37,6 +41,93 @@ Future<void> updateTodo(data, TextEditingController time,
     'content': content.text,
     'priority': priority,
   }).then((value) => print("Data Updated"));
+}
+
+// List<Map<String, Object>> status_todo = [
+//   {"status": "Incomplete", "icon": const Icon(Icons.crop_square_outlined)},
+// ];
+
+Future<void> updateStatus(data, String text, context) {
+  return toDo.doc(data.id).update({
+    'status': text,
+  }).then((value) {
+    print("Status Updated");
+    Navigator.pop(context);
+  });
+}
+
+void showStatus(context, data) {
+  showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              ButtonBar(
+                children: [
+                  TextButton(
+                    onPressed: () => updateStatus(data, 'Complete', context),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.check_box,
+                        ),
+                        SizedBox(width: 10),
+                        Text('Complete'),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => updateStatus(data, 'In Progress', context),
+                    child: Row(
+                      children: [
+                        Icon(Icons.star_half),
+                        SizedBox(width: 10),
+                        Text('In Progress'),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => updateStatus(data, 'Postponed', context),
+                    child: Row(
+                      children: [
+                        Icon(Icons.forward),
+                        SizedBox(width: 10),
+                        Text('Postponed'),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => updateStatus(data, 'Cancel', context),
+                    child: Row(
+                      children: [
+                        Icon(Icons.cancel_presentation_outlined),
+                        SizedBox(width: 10),
+                        Text('Cancel'),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => updateStatus(data, 'Incomplete', context),
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_box_outline_blank),
+                        SizedBox(width: 10),
+                        Text('Incomplete'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      });
 }
 
 void showContentDialog(context, data) {
@@ -52,7 +143,10 @@ void showContentDialog(context, data) {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Text("Date: " + data['date']),
+              SizedBox(height: 10),
               Text("Time: " + data['time']),
+              SizedBox(height: 10),
               Row(
                 children: [
                   Text("Priority: "),
@@ -64,6 +158,7 @@ void showContentDialog(context, data) {
                     Icon(Icons.circle, color: Colors.green),
                 ],
               ),
+              SizedBox(height: 10),
               Text("Content: " + data['content']),
             ],
           ),
@@ -98,6 +193,8 @@ void addContentDialog(context, data) {
     _value = data['priority'];
   }
   myProvider provider = myProvider();
+
+  final List<int> listItems = <int>[1, 2, 3];
   showDialog(
       context: context,
       barrierDismissible: true,
@@ -129,20 +226,12 @@ void addContentDialog(context, data) {
                   Text("Priority: "),
                   DropdownButton(
                     value: _value,
-                    items: const [
-                      DropdownMenuItem(
-                        child: Text("가장 중요"),
-                        value: 1,
-                      ),
-                      DropdownMenuItem(
-                        child: Text("중요"),
-                        value: 2,
-                      ),
-                      DropdownMenuItem(
-                        child: Text("일반"),
-                        value: 3,
-                      )
-                    ],
+                    items: listItems.map((int value) {
+                      return DropdownMenuItem<int>(
+                        value: value,
+                        child: Text("$value 순위"),
+                      );
+                    }).toList(),
                     onChanged: (value) {
                       provider.setPriority(value);
                     },
@@ -155,6 +244,7 @@ void addContentDialog(context, data) {
                   Text("Content: "),
                   Expanded(
                     child: TextField(
+                      maxLines: null,
                       controller: _content,
                     ),
                   ),
@@ -175,11 +265,13 @@ void addContentDialog(context, data) {
             FlatButton(
               child: new Text("저장"),
               onPressed: () {
-                if (data == null) saveToDo(_time, _content, _value);
-                updateTodo(data, _time, _content, _value);
+                if (data == null) {
+                  saveToDo(_time, _content, _value);
+                } else {
+                  updateTodo(data, _time, _content, _value);
+                }
                 _time.clear();
                 _content.clear();
-
                 Navigator.pop(context);
               },
             ),
@@ -196,8 +288,15 @@ class myProvider with ChangeNotifier {
   }
 }
 
-var today = DateTime.now();
-String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
+Icon selectIcon(data) {
+  if (data['status'] == "Complete") return Icon(Icons.check_box);
+  if (data['status'] == "In Progress") return Icon(Icons.star_half);
+  if (data['status'] == "Postponed") return Icon(Icons.forward);
+  if (data['status'] == "Cancel")
+    return Icon(Icons.cancel_presentation_outlined);
+
+  return Icon(Icons.check_box_outline_blank);
+}
 
 class ToDoPage extends StatefulWidget {
   const ToDoPage({Key? key}) : super(key: key);
@@ -249,51 +348,55 @@ class _ToDoPageState extends State<ToDoPage> {
                   decoration: BoxDecoration(
                     border: Border.all(),
                   ),
-                  child: Column(
-                    children: [
-                      StreamBuilder(
-                          stream: toDoList,
-                          builder: (BuildContext context,
-                              AsyncSnapshot<dynamic> snapshot) {
-                            if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            }
-                            if (!snapshot.hasData)
-                              return Text('Please fill your list');
+                  child: Flexible(
+                    child: Column(
+                      children: [
+                        StreamBuilder(
+                            stream: toDoList,
+                            builder: (BuildContext context,
+                                AsyncSnapshot<dynamic> snapshot) {
+                              if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              }
+                              if (!snapshot.hasData)
+                                return Text('Please fill your list');
 
-                            return ListView.builder(
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              itemCount: snapshot.data.docs.length,
-                              itemBuilder: (context, index) {
-                                DocumentSnapshot data =
-                                    snapshot.data.docs[index];
+                              return ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemCount: snapshot.data.docs.length,
+                                itemBuilder: (context, index) {
+                                  DocumentSnapshot data =
+                                      snapshot.data.docs[index];
 
-                                return Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.check_box_outline_blank),
-                                      onPressed: () => null,
-                                    ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          showContentDialog(context, data),
-                                      child: Text(
-                                        data['content'],
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.black),
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      IconButton(
+                                        icon: selectIcon(data),
+                                        onPressed: () =>
+                                            showStatus(context, data),
                                       ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }),
-                      IconButton(
-                          onPressed: () => addContentDialog(context, null),
-                          icon: Icon(Icons.add))
-                    ],
+                                      TextButton(
+                                        onPressed: () =>
+                                            showContentDialog(context, data),
+                                        child: Text(
+                                          data['content'],
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }),
+                        IconButton(
+                            onPressed: () => addContentDialog(context, null),
+                            icon: Icon(Icons.add))
+                      ],
+                    ),
                   ),
                 ),
               ),

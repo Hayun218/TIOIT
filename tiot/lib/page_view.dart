@@ -17,7 +17,6 @@ BottomAppBar appBar(BuildContext context) {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        // TODO: modify
         IconButton(
           onPressed: () => controller.jumpToPage(0),
           icon: Icon(pageChanged == 0 ? Icons.home : Icons.home_outlined),
