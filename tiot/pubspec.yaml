@@ -44,6 +44,7 @@ dependencies:
   date_format: ^2.0.4
   settings_ui: ^1.0.0
   pie_chart: ^5.1.0
+  table_calendar: ^3.0.3
 
   shrine_images: ^2.0.1
 
