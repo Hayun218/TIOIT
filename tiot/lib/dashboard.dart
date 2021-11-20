@@ -20,6 +20,16 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
+Icon selectIcon(data) {
+  if (data['status'] == "Complete") return Icon(Icons.check_box);
+  if (data['status'] == "In Progress") return Icon(Icons.star_half);
+  if (data['status'] == "Postponed") return Icon(Icons.forward);
+  if (data['status'] == "Cancel")
+    return Icon(Icons.cancel_presentation_outlined);
+
+  return Icon(Icons.check_box_outline_blank);
+}
+
 class _DashboardPageState extends State<DashboardPage> {
   Stream toDoList = FirebaseFirestore.instance
       .collection('user')
@@ -90,7 +100,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.check_box_outline_blank),
+                              icon: selectIcon(data),
                               onPressed: () => null,
                             ),
                             Text(

@@ -22,7 +22,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tiot/long_diary.dart';
 
 var today = DateTime.now();
-String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
+String todayDate = DateFormat('MM월 d일').format(DateTime.now());
 late File _image;
 bool _defaultImg = true;
 
@@ -67,7 +67,9 @@ CollectionReference user_diary = FirebaseFirestore.instance
     .doc(user.uid)
     .collection('diary');
 
-TextEditingController _shortDiary = TextEditingController();
+TextEditingController _thanks1 = TextEditingController();
+TextEditingController _thanks2 = TextEditingController();
+TextEditingController _thanks3 = TextEditingController();
 
 class _DiaryPageState extends State<DiaryPage> {
   CollectionReference products = FirebaseFirestore.instance.collection('diary');
@@ -81,10 +83,10 @@ class _DiaryPageState extends State<DiaryPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              height: 200,
+              height: 130,
               child: Center(
                 child: Text(
-                  todayDate,
+                  todayDate + " 감사일기",
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -112,13 +114,38 @@ class _DiaryPageState extends State<DiaryPage> {
                   icon: Icon(Icons.camera)),
             ),
             Container(
-              margin: EdgeInsets.all(30),
-              child: TextField(
-                controller: _shortDiary,
-                maxLines: 3,
-                minLines: 3,
-              ),
-            )
+                margin: EdgeInsets.fromLTRB(40, 0, 40, 0),
+                child: Column(
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: '1st Thanks',
+                      ),
+                      keyboardType: TextInputType.multiline,
+                      controller: _thanks1,
+                      maxLines: 1,
+                      minLines: 1,
+                    ),
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: '2nd Thanks',
+                      ),
+                      keyboardType: TextInputType.multiline,
+                      controller: _thanks2,
+                      maxLines: 1,
+                      minLines: 1,
+                    ),
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: '3rd Thanks',
+                      ),
+                      keyboardType: TextInputType.multiline,
+                      controller: _thanks3,
+                      maxLines: 1,
+                      minLines: 1,
+                    ),
+                  ],
+                ))
           ],
         ),
         Align(
