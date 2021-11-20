@@ -14,8 +14,11 @@ class TioT extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'TioT',
-      home: FirstScreen(),
+      home: SafeArea(
+        child: FirstScreen(),
+      ),
     );
   }
 

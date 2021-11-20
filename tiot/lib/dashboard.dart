@@ -50,7 +50,7 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         Center(
           child: Text(
-            todayDate + "\n Dashboard Page\n문구 입력",
+            todayDate + "\n Dashboard Page\n중요도 순으로 list 3개만 출력??\n문구 입력",
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
