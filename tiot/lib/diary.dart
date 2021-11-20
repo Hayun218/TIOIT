@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -20,6 +19,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tiot/long_diary.dart';
 
 var today = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
@@ -35,33 +35,39 @@ class DiaryPage extends StatefulWidget {
 
 Future<String> fileToStorage() async {
   FirebaseStorage firebaseStorageRef = FirebaseStorage.instance;
-
   var _url;
 
-  if (_defaultImg) {
-  } else {
-    String fileName = basename(_image.path);
+  String fileName = basename(_image.path);
 
-    Reference refBS = firebaseStorageRef.ref().child('diary').child(fileName);
+  Reference refBS = firebaseStorageRef.ref().child('diary').child(fileName);
 
-    var uploadTask = await refBS.putFile(_image);
+  var uploadTask = await refBS.putFile(_image);
 
-    _url = await uploadTask.ref.getDownloadURL();
-  }
+  _url = await uploadTask.ref.getDownloadURL();
+
   return _url;
 }
 
 _getFromGallery() async {
   PickedFile? pickedFile = await ImagePicker().getImage(
     source: ImageSource.gallery,
-    maxWidth: 1800,
-    maxHeight: 1800,
+    maxWidth: 300,
+    maxHeight: 400,
   );
   if (pickedFile != null) {
     _image = File(pickedFile.path);
     _defaultImg = false;
   }
 }
+
+User user = FirebaseAuth.instance.currentUser!;
+
+CollectionReference user_diary = FirebaseFirestore.instance
+    .collection('user')
+    .doc(user.uid)
+    .collection('diary');
+
+TextEditingController _shortDiary = TextEditingController();
 
 class _DiaryPageState extends State<DiaryPage> {
   CollectionReference products = FirebaseFirestore.instance.collection('diary');
@@ -78,8 +84,7 @@ class _DiaryPageState extends State<DiaryPage> {
               height: 200,
               child: Center(
                 child: Text(
-                  todayDate +
-                      "\n Diary Page\n이미지 storage 불러오기, db수정\n한 줄 comment 추가",
+                  todayDate,
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -87,46 +92,48 @@ class _DiaryPageState extends State<DiaryPage> {
                 ),
               ),
             ),
-            Image.network(
-              currentUser!.photoURL.toString(),
+            Container(
               width: 250,
-              height: 250,
-              fit: BoxFit.contain,
+              height: 280,
+              child: _defaultImg
+                  ? Image.network(
+                      'http://handong.edu/site/handong/res/img/logo.png',
+                      fit: BoxFit.contain,
+                    )
+                  : Image.file(File(_image.path)),
             ),
+            Container(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                  onPressed: () {
+                    // lost connection error.. why?
+                    _getFromGallery();
+                  },
+                  icon: Icon(Icons.camera)),
+            ),
+            Container(
+              margin: EdgeInsets.all(30),
+              child: TextField(
+                controller: _shortDiary,
+                maxLines: 3,
+                minLines: 3,
+              ),
+            )
           ],
         ),
-
-        Container(
-          width: 400,
-          height: 300,
-          child: _defaultImg
-              ? Image.network(
-                  'http://handong.edu/site/handong/res/img/logo.png')
-              : Image.file(File(_image.path)),
-        ),
-        Container(
-          alignment: Alignment.topRight,
-          child: IconButton(
-              onPressed: () {
-                _getFromGallery();
-              },
-              icon: Icon(Icons.camera)),
-        ),
-        
         Align(
           alignment: Alignment.bottomLeft,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: IconButton(
-              icon: Icon(
-                Icons.library_books_rounded,
-                size: 30,
-              ),
-              onPressed: () {
-                // TODO: create or modify
-              },
-            ),
+                icon: Icon(
+                  Icons.library_books_rounded,
+                  size: 30,
+                ),
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LongDiary()))),
           ),
+        ),
       ],
     );
   }
