@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'todo.dart';
 import 'dashboard.dart';
 import 'diary.dart';
 import 'badge.dart';
+import 'monthly.dart';
 
 enum PageState {
   dashboard,
@@ -80,7 +82,15 @@ class _HighlightPageState extends State<HighlightPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.blue,
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
     return Scaffold(
+      backgroundColor: Colors.white,
       bottomNavigationBar: appBar(context),
       body: PageView(
         controller: controller,
@@ -92,9 +102,9 @@ class _HighlightPageState extends State<HighlightPage> {
         },
         children: [
           DashboardPage(),
-          DiaryPage(),
           ToDoPage(),
           DiaryPage(),
+          MonthlyPage(),
           BadgedPage(signOut: widget.signOut),
         ],
       ),
