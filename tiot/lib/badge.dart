@@ -55,9 +55,10 @@ class _BadgedPageState extends State<BadgedPage> {
               child: Text(
                 todayDate + "\n Badge Page",
                 style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
               ),
             ),
           ),
