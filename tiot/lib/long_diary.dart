@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 var today = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
@@ -60,6 +61,7 @@ class _LongDiaryState extends State<LongDiary> {
           }
           if (!snapshot.hasData) {
             makeLongDiary();
+            return LoadingFlipping.circle();
           }
 
           _diaryCtrl = TextEditingController(text: snapshot.data['long_diary']);
