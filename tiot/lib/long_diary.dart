@@ -34,7 +34,7 @@ Future<void> saveLongDiary(TextEditingController ctrl) {
 Future<void> deleteLongDiary() {
   return user_diary.doc(todayDate).set({
     "long_diary": "",
-  }).then((value) => print("Deleted Long Diary"));
+  }, SetOptions(merge: true)).then((value) => print("Deleted Long Diary"));
 }
 
 Future<void> makeLongDiary() {
@@ -60,7 +60,6 @@ class _LongDiaryState extends State<LongDiary> {
             return Text('Error: ${snapshot.error}');
           }
           if (!snapshot.hasData) {
-            //makeLongDiary();
             return LoadingFlipping.circle();
           }
 

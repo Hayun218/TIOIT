@@ -133,7 +133,7 @@ class _DiaryPageState extends State<DiaryPage> {
                   icon: Icon(Icons.camera)),
             ),
             StreamBuilder(
-                stream: longDiary,
+                stream: diary,
                 builder:
                     (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                   if (snapshot.hasError) {
