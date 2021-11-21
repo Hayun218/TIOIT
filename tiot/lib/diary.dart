@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,7 +23,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tiot/long_diary.dart';
 
 var today = DateTime.now();
-String todayDate = DateFormat('MM월 d일').format(DateTime.now());
+String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
+String displayDate = DateFormat('MM월 d일').format(DateTime.now());
 late File _image;
 bool _defaultImg = true;
 
@@ -67,7 +69,7 @@ CollectionReference user_diary = FirebaseFirestore.instance
     .doc(user.uid)
     .collection('diary');
 
-Stream longDiary = FirebaseFirestore.instance
+Stream diary = FirebaseFirestore.instance
     .collection('user')
     .doc(user.uid)
     .collection('diary')
@@ -77,6 +79,19 @@ Stream longDiary = FirebaseFirestore.instance
 TextEditingController _thanks1 = TextEditingController();
 TextEditingController _thanks2 = TextEditingController();
 TextEditingController _thanks3 = TextEditingController();
+
+Future saveThanks(TextEditingController one, TextEditingController two,
+    TextEditingController three) {
+  List<String> thanks = [];
+  thanks.add(one.text);
+  thanks.add(two.text);
+  thanks.add(three.text);
+
+  return user_diary.doc(todayDate).set(
+    {"thanks": thanks},
+    SetOptions(merge: true),
+  ).then((value) => print("saved"));
+}
 
 class _DiaryPageState extends State<DiaryPage> {
   @override
@@ -90,7 +105,7 @@ class _DiaryPageState extends State<DiaryPage> {
               height: 130,
               child: Center(
                 child: Text(
-                  todayDate + " 감사일기",
+                  displayDate + " 감사일기",
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -117,39 +132,75 @@ class _DiaryPageState extends State<DiaryPage> {
                   },
                   icon: Icon(Icons.camera)),
             ),
-            Container(
-                margin: EdgeInsets.fromLTRB(40, 0, 40, 0),
-                child: Column(
-                  children: [
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: '1st Thanks',
-                      ),
-                      keyboardType: TextInputType.multiline,
-                      controller: _thanks1,
-                      maxLines: 1,
-                      minLines: 1,
+            StreamBuilder(
+                stream: longDiary,
+                builder:
+                    (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+                  if (!snapshot.hasData) {
+                    return LoadingFlipping.circle();
+                  }
+                  List<String> data =
+                      List<String>.from(snapshot.data['thanks']);
+
+                  if (data.isNotEmpty && data[0].isNotEmpty) {
+                    _thanks1 =
+                        TextEditingController(text: snapshot.data['thanks'][0]);
+                  }
+                  if (data.isNotEmpty && data[1].isNotEmpty) {
+                    _thanks2 =
+                        TextEditingController(text: snapshot.data['thanks'][1]);
+                  }
+                  if (data.isNotEmpty && data[2].isNotEmpty) {
+                    _thanks3 =
+                        TextEditingController(text: snapshot.data['thanks'][2]);
+                  }
+
+                  return Container(
+                    margin: EdgeInsets.fromLTRB(40, 0, 40, 0),
+                    child: Column(
+                      children: [
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: '1st Thanks',
+                          ),
+                          keyboardType: TextInputType.multiline,
+                          controller: _thanks1,
+                          maxLines: 1,
+                          minLines: 1,
+                        ),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: '2nd Thanks',
+                          ),
+                          keyboardType: TextInputType.multiline,
+                          controller: _thanks2,
+                          maxLines: 1,
+                          minLines: 1,
+                        ),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: '3rd Thanks',
+                          ),
+                          keyboardType: TextInputType.multiline,
+                          controller: _thanks3,
+                          maxLines: 1,
+                          minLines: 1,
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              saveThanks(_thanks1, _thanks2, _thanks3);
+                              _thanks1.clear();
+                              _thanks2.clear();
+                              _thanks3.clear();
+                            },
+                            child: Text("저장")),
+                      ],
                     ),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: '2nd Thanks',
-                      ),
-                      keyboardType: TextInputType.multiline,
-                      controller: _thanks2,
-                      maxLines: 1,
-                      minLines: 1,
-                    ),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: '3rd Thanks',
-                      ),
-                      keyboardType: TextInputType.multiline,
-                      controller: _thanks3,
-                      maxLines: 1,
-                      minLines: 1,
-                    ),
-                  ],
-                ))
+                  );
+                }),
           ],
         ),
         Align(
