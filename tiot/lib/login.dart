@@ -39,15 +39,27 @@ class _LoginPageState extends State<LoginPage> {
   Future addGoogleUser(UserCredential credential) {
     User? user = credential.user;
     // Write 정보
-    FirebaseFirestore.instance
-        .collection('user')
-        .doc(user!.uid)
-        .collection('toDo');
 
-    return FirebaseFirestore.instance.collection('user').doc(user.uid).set({
+    return FirebaseFirestore.instance.collection('user').doc(user!.uid).set({
       'email': user.email,
       'name': user.displayName,
       'uid': user.uid,
+    });
+  }
+
+  Future addToDo(UserCredential credential) {
+    User? user = credential.user;
+    // Write 정보
+    return FirebaseFirestore.instance
+        .collection('user')
+        .doc(user!.uid)
+        .collection('toDo')
+        .add({
+      'date': todayDate,
+      'time': "12:00-14:00",
+      'content': "example",
+      'priority': 1,
+      'status': "Incomplete",
     });
   }
 
@@ -61,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
         .doc(user!.uid)
         .collection('diary')
         .doc(todayDate)
-        .set({"long_diary": " ", "thanks": list});
+        .set({"long_diary": "", "thanks": list});
   }
 
   @override
@@ -120,6 +132,16 @@ class _LoginPageState extends State<LoginPage> {
                       .then((value) {
                     if (!value.exists) {
                       addDiary(credential);
+                    }
+                  });
+                  FirebaseFirestore.instance
+                      .collection('user')
+                      .doc(credential.user!.uid)
+                      .collection('toDo')
+                      .get()
+                      .then((value) {
+                    if (value.docs.isEmpty) {
+                      addToDo(credential);
                     }
                   });
                 },

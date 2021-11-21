@@ -8,8 +8,6 @@ import 'package:pie_chart/pie_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-User user = FirebaseAuth.instance.currentUser!;
-
 var today = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
 
@@ -33,7 +31,7 @@ Icon selectIcon(data) {
 class _DashboardPageState extends State<DashboardPage> {
   Stream toDoList = FirebaseFirestore.instance
       .collection('user')
-      .doc(user.uid)
+      .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('toDo')
       .snapshots();
   @override

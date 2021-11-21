@@ -7,13 +7,13 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-User user = FirebaseAuth.instance.currentUser!;
-CollectionReference toDo = FirebaseFirestore.instance
-    .collection('user')
-    .doc(user.uid)
-    .collection('toDo');
 var today = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
+
+CollectionReference toDo = FirebaseFirestore.instance
+    .collection('user')
+    .doc(FirebaseAuth.instance.currentUser!.uid)
+    .collection('toDo');
 
 Future<void> deleteToDo(data) {
   return toDo.doc(data.id).delete().then(
@@ -308,7 +308,7 @@ class ToDoPage extends StatefulWidget {
 class _ToDoPageState extends State<ToDoPage> {
   Stream toDoList = FirebaseFirestore.instance
       .collection('user')
-      .doc(user.uid)
+      .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('toDo')
       .snapshots();
 
