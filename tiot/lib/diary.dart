@@ -62,38 +62,32 @@ _getFromGallery() async {
   }
 }
 
-User user = FirebaseAuth.instance.currentUser!;
-
-CollectionReference user_diary = FirebaseFirestore.instance
-    .collection('user')
-    .doc(user.uid)
-    .collection('diary');
-
-Stream diary = FirebaseFirestore.instance
-    .collection('user')
-    .doc(user.uid)
-    .collection('diary')
-    .doc(todayDate)
-    .snapshots();
-
-TextEditingController _thanks1 = TextEditingController();
-TextEditingController _thanks2 = TextEditingController();
-TextEditingController _thanks3 = TextEditingController();
-
 Future saveThanks(TextEditingController one, TextEditingController two,
-    TextEditingController three) {
+    TextEditingController three, String uid) {
   List<String> thanks = [];
   thanks.add(one.text);
   thanks.add(two.text);
   thanks.add(three.text);
+  print(uid);
 
-  return user_diary.doc(todayDate).set(
+  return FirebaseFirestore.instance
+      .collection('user')
+      .doc(uid)
+      .collection('diary')
+      .doc(todayDate)
+      .set(
     {"thanks": thanks},
     SetOptions(merge: true),
   ).then((value) => print("saved"));
 }
 
 class _DiaryPageState extends State<DiaryPage> {
+  Stream diary = FirebaseFirestore.instance
+      .collection('user')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('diary')
+      .doc(todayDate)
+      .snapshots();
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -142,8 +136,13 @@ class _DiaryPageState extends State<DiaryPage> {
                   if (!snapshot.hasData) {
                     return LoadingFlipping.circle();
                   }
+
                   List<String> data =
                       List<String>.from(snapshot.data['thanks']);
+
+                  TextEditingController _thanks1 = TextEditingController();
+                  TextEditingController _thanks2 = TextEditingController();
+                  TextEditingController _thanks3 = TextEditingController();
 
                   if (data.isNotEmpty && data[0].isNotEmpty) {
                     _thanks1 =
@@ -191,7 +190,8 @@ class _DiaryPageState extends State<DiaryPage> {
                         ),
                         TextButton(
                             onPressed: () {
-                              saveThanks(_thanks1, _thanks2, _thanks3);
+                              saveThanks(_thanks1, _thanks2, _thanks3,
+                                  FirebaseAuth.instance.currentUser!.uid);
                               _thanks1.clear();
                               _thanks2.clear();
                               _thanks3.clear();
