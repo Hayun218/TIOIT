@@ -67,16 +67,20 @@ CollectionReference user_diary = FirebaseFirestore.instance
     .doc(user.uid)
     .collection('diary');
 
+Stream longDiary = FirebaseFirestore.instance
+    .collection('user')
+    .doc(user.uid)
+    .collection('diary')
+    .doc(todayDate)
+    .snapshots();
+
 TextEditingController _thanks1 = TextEditingController();
 TextEditingController _thanks2 = TextEditingController();
 TextEditingController _thanks3 = TextEditingController();
 
 class _DiaryPageState extends State<DiaryPage> {
-  CollectionReference products = FirebaseFirestore.instance.collection('diary');
-
   @override
   Widget build(BuildContext context) {
-    User? currentUser = FirebaseAuth.instance.currentUser;
     return Stack(
       children: [
         Column(
@@ -157,8 +161,10 @@ class _DiaryPageState extends State<DiaryPage> {
                   Icons.library_books_rounded,
                   size: 30,
                 ),
-                onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LongDiary()))),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LongDiary()));
+                }),
           ),
         ),
       ],

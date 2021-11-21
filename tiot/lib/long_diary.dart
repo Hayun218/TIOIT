@@ -39,7 +39,7 @@ Future<void> deleteLongDiary() {
 
 Future<void> makeLongDiary() {
   return user_diary.doc(todayDate).set({}, SetOptions(merge: true)).then(
-      (value) => print("Create Long Diary Docs"));
+      (value) => print("Create Long Diary Docs for" + todayDate));
 }
 
 TextEditingController _diaryCtrl = TextEditingController();

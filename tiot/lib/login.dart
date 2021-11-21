@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tiot/badge.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -42,11 +43,37 @@ class _LoginPageState extends State<LoginPage> {
         .collection('user')
         .doc(user!.uid)
         .collection('toDo');
+
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(user.uid)
+        .collection('diary')
+        .doc(todayDate);
+
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(user.uid)
+        .collection('diary')
+        .doc(todayDate + " 감사일기");
+
     return FirebaseFirestore.instance.collection('user').doc(user.uid).set({
       'email': user.email,
       'name': user.displayName,
       'uid': user.uid,
     });
+  }
+
+  // Collection 에 Diary Docs  추가하기
+  Future addDiary(UserCredential credential) {
+    User? user = credential.user;
+    List<String> list = [];
+
+    return FirebaseFirestore.instance
+        .collection('user')
+        .doc(user!.uid)
+        .collection('diary')
+        .doc(todayDate)
+        .set({"long_diary": "", "thanks": list});
   }
 
   @override
@@ -94,6 +121,17 @@ class _LoginPageState extends State<LoginPage> {
                       .then((value) {
                     if (value.docs.isEmpty) {
                       addGoogleUser(credential);
+                    }
+                  });
+                  FirebaseFirestore.instance
+                      .collection('user')
+                      .doc(credential.user!.uid)
+                      .collection('diary')
+                      .doc(todayDate)
+                      .get()
+                      .then((value) {
+                    if (!value.exists) {
+                      addDiary(credential);
                     }
                   });
                 },
