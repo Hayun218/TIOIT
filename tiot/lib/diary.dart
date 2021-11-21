@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:path_provider/path_provider.dart';
@@ -25,41 +22,12 @@ import 'package:tiot/long_diary.dart';
 var today = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
 String displayDate = DateFormat('MM월 d일').format(DateTime.now());
-late File _image;
-bool _defaultImg = true;
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
 
   @override
   State<DiaryPage> createState() => _DiaryPageState();
-}
-
-Future<String> fileToStorage() async {
-  FirebaseStorage firebaseStorageRef = FirebaseStorage.instance;
-  var _url;
-
-  String fileName = basename(_image.path);
-
-  Reference refBS = firebaseStorageRef.ref().child('diary').child(fileName);
-
-  var uploadTask = await refBS.putFile(_image);
-
-  _url = await uploadTask.ref.getDownloadURL();
-
-  return _url;
-}
-
-_getFromGallery() async {
-  PickedFile? pickedFile = await ImagePicker().getImage(
-    source: ImageSource.gallery,
-    maxWidth: 300,
-    maxHeight: 400,
-  );
-  if (pickedFile != null) {
-    _image = File(pickedFile.path);
-    _defaultImg = false;
-  }
 }
 
 Future saveThanks(TextEditingController one, TextEditingController two,
@@ -81,7 +49,36 @@ Future saveThanks(TextEditingController one, TextEditingController two,
   ).then((value) => print("saved"));
 }
 
+bool _defaultImg = true;
+
 class _DiaryPageState extends State<DiaryPage> {
+  late File _image;
+
+  Future<String> fileToStorage() async {
+    FirebaseStorage firebaseStorageRef = FirebaseStorage.instance;
+    String _url;
+
+    String fileName = basename(_image.path);
+
+    Reference refBS = firebaseStorageRef.ref().child('diary').child(fileName);
+
+    var uploadTask = await refBS.putFile(_image);
+
+    _url = await uploadTask.ref.getDownloadURL();
+
+    return _url;
+  }
+
+  final _picker = ImagePicker();
+
+  getFromGallery() async {
+    var image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      _image = File(image.path);
+      _defaultImg = false;
+    }
+  }
+
   Stream diary = FirebaseFirestore.instance
       .collection('user')
       .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -121,8 +118,8 @@ class _DiaryPageState extends State<DiaryPage> {
               alignment: Alignment.topRight,
               child: IconButton(
                   onPressed: () {
-                    // lost connection error.. why?
-                    _getFromGallery();
+                    // toDo: lost connection error..
+                    getFromGallery();
                   },
                   icon: Icon(Icons.camera)),
             ),

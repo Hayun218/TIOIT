@@ -49,7 +49,8 @@ class _LoginPageState extends State<LoginPage> {
 
   Future addToDo(UserCredential credential) {
     User? user = credential.user;
-    // Write 정보
+    // example to do document
+    // toDo: diary처럼 date별로 읽어올 수 있도록 로직구현해야함
     return FirebaseFirestore.instance
         .collection('user')
         .doc(user!.uid)
