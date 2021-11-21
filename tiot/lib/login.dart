@@ -44,18 +44,6 @@ class _LoginPageState extends State<LoginPage> {
         .doc(user!.uid)
         .collection('toDo');
 
-    FirebaseFirestore.instance
-        .collection('user')
-        .doc(user.uid)
-        .collection('diary')
-        .doc(todayDate);
-
-    FirebaseFirestore.instance
-        .collection('user')
-        .doc(user.uid)
-        .collection('diary')
-        .doc(todayDate + " 감사일기");
-
     return FirebaseFirestore.instance.collection('user').doc(user.uid).set({
       'email': user.email,
       'name': user.displayName,
@@ -73,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
         .doc(user!.uid)
         .collection('diary')
         .doc(todayDate)
-        .set({"long_diary": "", "thanks": list});
+        .set({"long_diary": " ", "thanks": list});
   }
 
   @override

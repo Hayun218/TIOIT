@@ -60,7 +60,7 @@ class _LongDiaryState extends State<LongDiary> {
             return Text('Error: ${snapshot.error}');
           }
           if (!snapshot.hasData) {
-            makeLongDiary();
+            //makeLongDiary();
             return LoadingFlipping.circle();
           }
 
