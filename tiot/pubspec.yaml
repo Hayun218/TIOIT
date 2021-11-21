@@ -45,7 +45,6 @@ dependencies:
   settings_ui: ^1.0.0
   pie_chart: ^5.1.0
   table_calendar: ^3.0.3
-  shared_preferences: ^2.0.9
 
   shrine_images: ^2.0.1
 
