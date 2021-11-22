@@ -34,7 +34,8 @@ class _DashboardPageState extends State<DashboardPage> {
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('toDo')
       .where("date", isEqualTo: todayDate)
-      //  .orderBy("priority", descending: true)
+      .orderBy("priority")
+      .orderBy("time")
       .limit(3)
       .snapshots();
 
@@ -51,18 +52,20 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               Text(
                 "Hello, " + currentUser!.displayName.toString(),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               CircleAvatar(
-                radius: 25,
+                radius: 20,
                 backgroundImage: NetworkImage(currentUser.photoURL.toString()),
               ),
             ],
           ),
         ),
+        Text("오늘의 문구"),
+        SizedBox(height: 20),
         Center(
           child: Text(
-            todayDate + "\n Dashboard Page\n중요도 순으로 list 3개만 출력??\n문구 입력",
+            todayDate,
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
