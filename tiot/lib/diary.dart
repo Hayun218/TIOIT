@@ -49,6 +49,18 @@ Future saveThanks(TextEditingController one, TextEditingController two,
   ).then((value) => print("saved"));
 }
 
+// Collection 에 Diary Docs  추가하기
+Future addDiary(String uid) {
+  List<String> list = [];
+
+  return FirebaseFirestore.instance
+      .collection('user')
+      .doc(uid)
+      .collection('diary')
+      .doc(todayDate)
+      .set({"long_diary": "", "thanks": list});
+}
+
 bool _defaultImg = true;
 
 class _DiaryPageState extends State<DiaryPage> {
@@ -85,6 +97,7 @@ class _DiaryPageState extends State<DiaryPage> {
       .collection('diary')
       .doc(todayDate)
       .snapshots();
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -131,6 +144,7 @@ class _DiaryPageState extends State<DiaryPage> {
                     return Text('Error: ${snapshot.error}');
                   }
                   if (!snapshot.hasData) {
+                    addDiary(FirebaseAuth.instance.currentUser!.uid);
                     return LoadingFlipping.circle();
                   }
 

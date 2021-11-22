@@ -64,19 +64,6 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  // Collection 에 Diary Docs  추가하기
-  Future addDiary(UserCredential credential) {
-    User? user = credential.user;
-    List<String> list = [];
-
-    return FirebaseFirestore.instance
-        .collection('user')
-        .doc(user!.uid)
-        .collection('diary')
-        .doc(todayDate)
-        .set({"long_diary": "", "thanks": list});
-  }
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -124,17 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                       addGoogleUser(credential);
                     }
                   });
-                  FirebaseFirestore.instance
-                      .collection('user')
-                      .doc(credential.user!.uid)
-                      .collection('diary')
-                      .doc(todayDate)
-                      .get()
-                      .then((value) {
-                    if (!value.exists) {
-                      addDiary(credential);
-                    }
-                  });
+
                   FirebaseFirestore.instance
                       .collection('user')
                       .doc(credential.user!.uid)
