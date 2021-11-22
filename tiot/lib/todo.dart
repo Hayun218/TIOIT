@@ -311,7 +311,7 @@ class _ToDoPageState extends State<ToDoPage> {
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('toDo')
       .where('date', isEqualTo: todayDate)
-      //.orderBy('time', descending: false)
+      .orderBy('time', descending: false)
       .snapshots();
 
   @override
@@ -353,6 +353,15 @@ class _ToDoPageState extends State<ToDoPage> {
                   ),
                   child: Column(
                     children: [
+                      SizedBox(height: 10),
+                      Text(
+                        "To Do",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
                       StreamBuilder(
                           stream: toDoList,
                           builder: (BuildContext context,

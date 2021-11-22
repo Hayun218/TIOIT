@@ -85,6 +85,7 @@ class _LongDiaryState extends State<LongDiary> {
                   minLines: 28,
                   keyboardType: TextInputType.multiline,
                   maxLines: 28,
+                  //  style: TextStyle(decoration: TextDecoration.underline),
                   decoration: InputDecoration(
                     hintText: 'Long Diary',
                     hintStyle: TextStyle(color: Colors.grey),
