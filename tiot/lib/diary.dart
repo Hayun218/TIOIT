@@ -33,6 +33,39 @@ class DiaryPage extends StatefulWidget {
   State<DiaryPage> createState() => _DiaryPageState();
 }
 
+
+Future saveThanks(TextEditingController one, TextEditingController two,
+    TextEditingController three, String uid) {
+  List<String> thanks = [];
+  thanks.add(one.text);
+  thanks.add(two.text);
+  thanks.add(three.text);
+  print(uid);
+
+  return FirebaseFirestore.instance
+      .collection('user')
+      .doc(uid)
+      .collection('diary')
+      .doc(todayDate)
+      .set(
+    {"thanks": thanks},
+    SetOptions(merge: true),
+  ).then((value) => print("saved"));
+}
+
+// Collection 에 Diary Docs  추가하기
+Future addDiary(String uid) {
+  List<String> list = [];
+
+  return FirebaseFirestore.instance
+      .collection('user')
+      .doc(uid)
+      .collection('diary')
+      .doc(todayDate)
+      .set({"long_diary": "", "thanks": list,  "photoUrl": ""});
+}
+
+
 bool _defaultImg = true;
 
 class _DiaryPageState extends State<DiaryPage> {
@@ -116,6 +149,7 @@ class _DiaryPageState extends State<DiaryPage> {
       .collection('diary')
       .doc(todayDate)
       .snapshots();
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -162,6 +196,7 @@ class _DiaryPageState extends State<DiaryPage> {
                     return Text('Error: ${snapshot.error}');
                   }
                   if (!snapshot.hasData) {
+                    addDiary(FirebaseAuth.instance.currentUser!.uid);
                     return LoadingFlipping.circle();
                   }
 
