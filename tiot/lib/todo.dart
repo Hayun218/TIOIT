@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:time_range_picker/time_range_picker.dart';
 
 var today = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
@@ -24,20 +25,20 @@ Future<void> deleteToDo(data) {
 }
 
 Future<void> saveToDo(
-    TextEditingController time, TextEditingController content, int priority) {
+    String time, TextEditingController content, int priority) {
   return toDo.doc().set({
     'date': todayDate,
-    'time': time.text,
+    'time': time,
     'content': content.text,
     'priority': priority,
     'status': "Incomplete",
   }).then((value) => print("Data Added"));
 }
 
-Future<void> updateTodo(data, TextEditingController time,
-    TextEditingController content, int priority) {
+Future<void> updateTodo(
+    data, String time, TextEditingController content, int priority) {
   return toDo.doc(data.id).update({
-    'time': time.text,
+    'time': time,
     'content': content.text,
     'priority': priority,
   }).then((value) => print("Data Updated"));
@@ -186,14 +187,37 @@ TextEditingController _time = TextEditingController();
 TextEditingController _content = TextEditingController();
 int _value = 1;
 
+TimeOfDay _startTime = TimeOfDay.now();
+TimeOfDay _endTime = TimeOfDay.now();
+
+_selectTime(BuildContext context, TimeOfDay selectedTime, bool start) async {
+  var provider = myProvider();
+  final TimeOfDay? timeOfDay = await showTimePicker(
+    context: context,
+    initialTime: selectedTime,
+    initialEntryMode: TimePickerEntryMode.input,
+  );
+
+  if (timeOfDay != null && start) {
+    _startTime = timeOfDay;
+    print(_startTime);
+  }
+  if (timeOfDay != null && !start) {
+    _endTime = timeOfDay;
+  }
+}
+
 void addContentDialog(context, data) {
   if (data != null) {
     _content = TextEditingController(text: data['content']);
     _time = TextEditingController(text: data['time']);
     _value = data['priority'];
   }
-  myProvider provider = myProvider();
+  String timeI = "";
 
+  if (data['time'] != "") {
+    timeI = data['time'];
+  }
   final List<int> listItems = <int>[1, 2, 3];
   showDialog(
       context: context,
@@ -203,61 +227,12 @@ void addContentDialog(context, data) {
           title: Center(child: Text("To Do")),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    child: const Text("Time: "),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _time,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Text("Priority: "),
-                  DropdownButton(
-                    value: _value,
-                    items: listItems.map((int value) {
-                      return DropdownMenuItem<int>(
-                        value: value,
-                        child: Text("$value 순위"),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      provider.setPriority(value);
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Text("Content: "),
-                  Expanded(
-                    child: TextField(
-                      maxLines: null,
-                      controller: _content,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
           actions: <Widget>[
             FlatButton(
               child: new Text("취소"),
               onPressed: () {
-                _time.clear();
                 _content.clear();
+                _value = 1;
 
                 Navigator.pop(context);
               },
@@ -266,16 +241,93 @@ void addContentDialog(context, data) {
               child: new Text("저장"),
               onPressed: () {
                 if (data == null) {
-                  saveToDo(_time, _content, _value);
+                  saveToDo(timeI, _content, _value);
                 } else {
-                  updateTodo(data, _time, _content, _value);
+                  updateTodo(data, timeI, _content, _value);
                 }
-                _time.clear();
+
                 _content.clear();
                 Navigator.pop(context);
               },
             ),
           ],
+          content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    child: const Text("Time: "),
+                  ),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          TimeRange result = await showTimeRangePicker(
+                            context: context,
+                          );
+
+                          setState(() => timeI = result.startTime
+                                  .toString()
+                                  .replaceAll(RegExp('[A-Za-z]'), '')
+                                  .replaceAll("(", "")
+                                  .replaceAll(")", "") +
+                              " - " +
+                              result.endTime
+                                  .toString()
+                                  .replaceAll(RegExp('[A-Za-z]'), '')
+                                  .replaceAll("(", "")
+                                  .replaceAll(")", ""));
+                        },
+                        child: Text("Selete Time"),
+                      ),
+                      SizedBox(width: 20),
+                      Text(timeI),
+
+                      // Expanded(
+                      //   child: TextField(
+                      //     controller: _time,
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Text("Priority: "),
+                      DropdownButton(
+                        value: _value,
+                        items: listItems.map((int value) {
+                          return DropdownMenuItem<int>(
+                            value: value,
+                            child: Text("$value 순위"),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() => _value = value as int);
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Text("Content: "),
+                      Expanded(
+                        child: TextField(
+                          maxLines: null,
+                          controller: _content,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }),
         );
       });
 }
@@ -284,6 +336,16 @@ class myProvider with ChangeNotifier {
   void setPriority(value) {
     print(value);
     _value = value as int;
+    notifyListeners();
+  }
+
+  void setTime(timeOfDay, start) {
+    if (start)
+      _startTime = timeOfDay;
+    else
+      _endTime = timeOfDay;
+
+    print(_endTime);
     notifyListeners();
   }
 }
@@ -320,17 +382,17 @@ class _ToDoPageState extends State<ToDoPage> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 10, 10),
-              child: IconButton(
-                icon: const Icon(Icons.add_circle),
-                onPressed: () {},
-                iconSize: 40,
-              ),
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.bottomRight,
+          //   child: Padding(
+          //     padding: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+          //     child: IconButton(
+          //       icon: const Icon(Icons.add_circle),
+          //       onPressed: () {},
+          //       iconSize: 40,
+          //     ),
+          //   ),
+          // ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -357,7 +419,7 @@ class _ToDoPageState extends State<ToDoPage> {
                       Text(
                         "To Do",
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
                         ),
