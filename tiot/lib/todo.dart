@@ -310,6 +310,8 @@ class _ToDoPageState extends State<ToDoPage> {
       .collection('user')
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('toDo')
+      .where('date', isEqualTo: todayDate)
+      //.orderBy('time', descending: false)
       .snapshots();
 
   @override
