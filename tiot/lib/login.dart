@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
         .doc(user!.uid)
         .collection('diary')
         .doc(todayDate)
-        .set({"long_diary": "", "thanks": list});
+        .set({"long_diary": "", "thanks": list, "photoUrl": ""});
   }
 
   @override

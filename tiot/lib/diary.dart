@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:path_provider/path_provider.dart';
@@ -30,43 +33,71 @@ class DiaryPage extends StatefulWidget {
   State<DiaryPage> createState() => _DiaryPageState();
 }
 
-Future saveThanks(TextEditingController one, TextEditingController two,
-    TextEditingController three, String uid) {
-  List<String> thanks = [];
-  thanks.add(one.text);
-  thanks.add(two.text);
-  thanks.add(three.text);
-  print(uid);
-
-  return FirebaseFirestore.instance
-      .collection('user')
-      .doc(uid)
-      .collection('diary')
-      .doc(todayDate)
-      .set(
-    {"thanks": thanks},
-    SetOptions(merge: true),
-  ).then((value) => print("saved"));
-}
-
 bool _defaultImg = true;
 
 class _DiaryPageState extends State<DiaryPage> {
-  late File _image;
+  File? _image;
+  firebase_storage.FirebaseStorage firebaseStorage =
+      firebase_storage.FirebaseStorage.instance;
 
-  Future<String> fileToStorage() async {
-    FirebaseStorage firebaseStorageRef = FirebaseStorage.instance;
-    String _url;
+  Future saveThanks(TextEditingController one, TextEditingController two,
+      TextEditingController three, String uid) async {
+    List<String> thanks = [];
+    thanks.add(one.text);
+    thanks.add(two.text);
+    thanks.add(three.text);
+    print(uid);
+    try {
+      _image ??=
+          await urlToFile('https://handong.edu/site/handong/res/img/logo.png');
+      // storage 업로드 파일 경로
+      final firebaseStorageRef = firebaseStorage
+          .ref()
+          .child('post')
+          .child('/${DateTime.now().millisecondsSinceEpoch.toString()}.png');
+      // 파일 업로드
+      final uploadTask = firebaseStorageRef.putFile(
+          _image!, firebase_storage.SettableMetadata(contentType: 'image/png'));
+      // 완료 대기
+      await uploadTask.whenComplete(() => null);
+      // 업로드 완료 후 url
+      final downloadUrl = await firebaseStorageRef.getDownloadURL();
+      return FirebaseFirestore.instance
+          .collection('user')
+          .doc(uid)
+          .collection('diary')
+          .doc(todayDate)
+          .set(
+        {"thanks": thanks, "photoUrl": downloadUrl},
+        SetOptions(merge: true),
+      ).then((value) => print("saved"));
+    } catch (e) {
+      print(e);
+    }
+  }
 
-    String fileName = basename(_image.path);
+  Future<File> urlToFile(String imageUrl) async {
+    var rng = Random();
+    Directory tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    File file = File(tempPath + (rng.nextInt(100)).toString() + '.png');
+    http.Response response = await http.get(Uri.parse(imageUrl));
+    await file.writeAsBytes(response.bodyBytes);
+    _image = file;
+    return file;
+  }
 
-    Reference refBS = firebaseStorageRef.ref().child('diary').child(fileName);
+  Future pickImage() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image == null) return;
 
-    var uploadTask = await refBS.putFile(_image);
-
-    _url = await uploadTask.ref.getDownloadURL();
-
-    return _url;
+      final imageTemporary = File(image.path);
+      setState(() => _image = imageTemporary);
+    } on PlatformException catch (e) {
+      // ignore: avoid_print
+      print("Failed to pick image: $e");
+    }
   }
 
   final _picker = ImagePicker();
@@ -107,19 +138,19 @@ class _DiaryPageState extends State<DiaryPage> {
             Container(
               width: 250,
               height: 280,
-              child: _defaultImg
+              child: _image == null
                   ? Image.network(
                       'http://handong.edu/site/handong/res/img/logo.png',
                       fit: BoxFit.contain,
                     )
-                  : Image.file(File(_image.path)),
+                  : Image.file(_image!),
             ),
             Container(
               alignment: Alignment.topRight,
               child: IconButton(
                   onPressed: () {
                     // toDo: lost connection error..
-                    getFromGallery();
+                    pickImage();
                   },
                   icon: Icon(Icons.camera)),
             ),
