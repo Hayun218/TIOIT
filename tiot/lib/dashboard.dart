@@ -34,9 +34,10 @@ class _DashboardPageState extends State<DashboardPage> {
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('toDo')
       .where("date", isEqualTo: todayDate)
-      // .orderBy("priority", descending: true)
+      //  .orderBy("priority", descending: true)
       .limit(3)
       .snapshots();
+
   @override
   Widget build(BuildContext context) {
     User? currentUser = FirebaseAuth.instance.currentUser;
