@@ -208,16 +208,16 @@ _selectTime(BuildContext context, TimeOfDay selectedTime, bool start) async {
 }
 
 void addContentDialog(context, data) {
+  String timeI = "";
   if (data != null) {
     _content = TextEditingController(text: data['content']);
     _time = TextEditingController(text: data['time']);
     _value = data['priority'];
+    if (data['time'] != "") {
+      timeI = data['time'];
+    }
   }
-  String timeI = "";
 
-  if (data['time'] != "") {
-    timeI = data['time'];
-  }
   final List<int> listItems = <int>[1, 2, 3];
   showDialog(
       context: context,
