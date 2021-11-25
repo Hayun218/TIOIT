@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'dashboard.dart';
@@ -14,7 +15,7 @@ class MonthlyPage extends StatefulWidget {
 
 class _MonthlypageState extends State<MonthlyPage> {
   List queryDates = [];
-  String queryDateString = '';
+  String queryDateString = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
   final todaysDate = DateTime.now();
   var _focusedCalendarDate = DateTime.now();
   final _initialCalendarDate = DateTime(2000);
