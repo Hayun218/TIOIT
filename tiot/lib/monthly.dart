@@ -173,10 +173,12 @@ class _MonthlypageState extends State<MonthlyPage> {
                                 icon: selectIcon(data),
                                 onPressed: () => null,
                               ),
-                              Text(
-                                data['content'],
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.black),
+                              Expanded(
+                                child: Text(
+                                  data['content'],
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.black),
+                                ),
                               ),
                             ],
                           ),

@@ -446,6 +446,7 @@ class _ToDoPageState extends State<ToDoPage> {
 
                                 return Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     IconButton(
                                       icon: selectIcon(data),
@@ -456,11 +457,14 @@ class _ToDoPageState extends State<ToDoPage> {
                                       child: TextButton(
                                         onPressed: () =>
                                             showContentDialog(context, data),
-                                        child: Text(
-                                          data['content'],
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black),
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            data['content'],
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black),
+                                          ),
                                         ),
                                       ),
                                     ),
