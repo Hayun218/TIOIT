@@ -53,6 +53,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   loading_animations: ^2.2.0
   time_range_picker: ^2.1.0
+  fl_chart: ^0.40.2
 
 dev_dependencies:
   flutter_test:
