@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 
 var today = DateTime.now();
@@ -431,8 +432,9 @@ class _ToDoPageState extends State<ToDoPage> {
                             if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             }
-                            if (!snapshot.hasData)
-                              return Text('Please fill your list');
+                            if (!snapshot.hasData) {
+                              return LoadingFlipping.circle();
+                            }
 
                             return ListView.builder(
                               scrollDirection: Axis.vertical,
@@ -450,15 +452,19 @@ class _ToDoPageState extends State<ToDoPage> {
                                       onPressed: () =>
                                           showStatus(context, data),
                                     ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          showContentDialog(context, data),
-                                      child: Text(
-                                        data['content'],
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.black),
+                                    Expanded(
+                                      child: TextButton(
+                                        onPressed: () =>
+                                            showContentDialog(context, data),
+                                        child: Text(
+                                          data['content'],
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black),
+                                        ),
                                       ),
                                     ),
+                                    Divider(height: 10, thickness: 1),
                                   ],
                                 );
                               },
