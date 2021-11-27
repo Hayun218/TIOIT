@@ -4,13 +4,30 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 var today = DateTime.now();
-String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
+var format = DateFormat('yyyy년 MM월 d일');
+String todayDate = format.format(DateTime.now());
+String firstDate = format.format(today.subtract(const Duration(days: 6)));
+String secondDate = format.format(today.subtract(const Duration(days: 5)));
+String thirdDate = format.format(today.subtract(const Duration(days: 4)));
+String fourthDate = format.format(today.subtract(const Duration(days: 3)));
+String fifthDate = format.format(today.subtract(const Duration(days: 2)));
+String sixthDate = format.format(today.subtract(const Duration(days: 1)));
+List<String> days = [
+  firstDate,
+  secondDate,
+  thirdDate,
+  fourthDate,
+  fifthDate,
+  sixthDate,
+  todayDate
+];
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -23,10 +40,11 @@ Icon selectIcon(data) {
   if (data['status'] == "Complete") return Icon(Icons.check_box);
   if (data['status'] == "In Progress") return Icon(Icons.star_half);
   if (data['status'] == "Postponed") return Icon(Icons.forward);
-  if (data['status'] == "Cancel")
+  if (data['status'] == "Cancel") {
     return Icon(Icons.cancel_presentation_outlined);
+  }
 
-  return Icon(Icons.check_box_outline_blank);
+  return const Icon(Icons.check_box_outline_blank);
 }
 
 class _DashboardPageState extends State<DashboardPage> {
@@ -53,7 +71,8 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               Text(
                 "Hello, " + currentUser!.displayName.toString(),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               CircleAvatar(
                 radius: 20,
@@ -91,7 +110,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 }
-                if (!snapshot.hasData) return Text('Please fill your list');
+                if (!snapshot.hasData) return LoadingFlipping.circle();
 
                 return ListView.builder(
                   scrollDirection: Axis.vertical,
@@ -140,31 +159,52 @@ class LineChartSample2 extends StatefulWidget {
 }
 
 class _LineChartSample2State extends State<LineChartSample2> {
+  Stream toDoData = FirebaseFirestore.instance
+      .collection('user')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('statistic')
+      .where(FieldPath.documentId, whereIn: days)
+      .snapshots();
+
   List<Color> gradientColors = [
-    const Color(0xff23b6e6),
-    const Color(0xff02d39a),
+    const Color(0xff90caf9),
+    const Color(0xff2196f3),
   ];
 
   bool showAvg = false;
 
   @override
   Widget build(BuildContext context) {
+    getTotalNumber();
     return Stack(
       children: <Widget>[
         AspectRatio(
-          aspectRatio: 1.70,
+          aspectRatio: 1.30,
           child: Container(
             decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(
                   Radius.circular(18),
                 ),
-                color: Color(0xff232d37)),
+                color: Color(0xffe3f2fd)),
             child: Padding(
               padding: const EdgeInsets.only(
                   right: 18.0, left: 12.0, top: 24, bottom: 12),
-              child: LineChart(
-                showAvg ? avgData() : mainData(),
-              ),
+              child: StreamBuilder(
+                  stream: toDoData,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+                    if (!snapshot.hasData) {
+                      return LoadingFlipping.circle();
+                    }
+
+                    List<DocumentSnapshot> documents = snapshot.data.docs;
+
+                    return LineChart(
+                        showAvg ? mainData(documents) : mainData(documents));
+                  }),
             ),
           ),
         ),
@@ -182,7 +222,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               style: TextStyle(
                   fontSize: 12,
                   color:
-                      showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
+                      showAvg ? Colors.black.withOpacity(0.2) : Colors.black),
             ),
           ),
         ),
@@ -190,23 +230,38 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
   }
 
-  LineChartData mainData() {
+  Future getTotalNumber() async {
+    CollectionReference toDoData = FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('toDo');
+    // 수정해야함 일주일치 date는 어떻게 받아올지 구상!
+    QuerySnapshot completedN = await toDoData
+        .where("date", isEqualTo: todayDate)
+        .where("status", isEqualTo: "Complete")
+        .get();
+    QuerySnapshot totalN =
+        await toDoData.where("date", isEqualTo: todayDate).get();
+    saveSta(completedN.size, totalN.size);
+  }
+
+  Future saveSta(int comp, int total) {
+    CollectionReference toDoSta = FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('statistic');
+
+    return toDoSta
+        .doc(todayDate)
+        .set({"totalN": total, "completed": comp}).then(
+            (value) => print("save numbers"));
+  }
+
+  LineChartData mainData(documents) {
     return LineChartData(
       gridData: FlGridData(
-        show: true,
-        drawVerticalLine: true,
-        getDrawingHorizontalLine: (value) {
-          return FlLine(
-            color: const Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-        getDrawingVerticalLine: (value) {
-          return FlLine(
-            color: const Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
+        show: false,
+        drawVerticalLine: false,
       ),
       titlesData: FlTitlesData(
         show: true,
@@ -214,20 +269,26 @@ class _LineChartSample2State extends State<LineChartSample2> {
         topTitles: SideTitles(showTitles: false),
         bottomTitles: SideTitles(
           showTitles: true,
-          reservedSize: 22,
+          reservedSize: 20,
           interval: 1,
-          getTextStyles: (context, value) => const TextStyle(
-              color: Color(0xff68737d),
-              fontWeight: FontWeight.bold,
-              fontSize: 16),
+          getTextStyles: (context, value) =>
+              const TextStyle(color: Color(0xff68737d), fontSize: 12),
           getTitles: (value) {
             switch (value.toInt()) {
+              case 1:
+                return firstDate.split(" ")[2];
               case 2:
-                return 'MAR';
+                return secondDate.split(" ")[2];
+              case 3:
+                return thirdDate.split(" ")[2];
+              case 4:
+                return fourthDate.split(" ")[2];
               case 5:
-                return 'JUN';
-              case 8:
-                return 'SEP';
+                return fifthDate.split(" ")[2];
+              case 6:
+                return sixthDate.split(" ")[2];
+              case 7:
+                return todayDate.split(" ")[2];
             }
             return '';
           },
@@ -244,40 +305,41 @@ class _LineChartSample2State extends State<LineChartSample2> {
           getTitles: (value) {
             switch (value.toInt()) {
               case 1:
-                return '10k';
-              case 3:
-                return '30k';
+                return '1';
               case 5:
-                return '50k';
+                return '5';
+              case 10:
+                return '10';
             }
             return '';
           },
           reservedSize: 32,
-          margin: 12,
+          margin: 13,
         ),
       ),
       borderData: FlBorderData(
           show: true,
           border: Border.all(color: const Color(0xff37434d), width: 1)),
       minX: 0,
-      maxX: 11,
+      maxX: 7,
       minY: 0,
-      maxY: 6,
+      maxY: 12,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 4),
+          spots: [
+            FlSpot(0, 0),
+            FlSpot(1, findSpot(documents, 0)),
+            FlSpot(2, findSpot(documents, 1)),
+            FlSpot(3, findSpot(documents, 2)),
+            FlSpot(4, findSpot(documents, 3)),
+            FlSpot(5, findSpot(documents, 4)),
+            FlSpot(6, findSpot(documents, 5)),
+            FlSpot(7, findSpot(documents, 6)),
           ],
           isCurved: true,
           colors: gradientColors,
           barWidth: 5,
-          isStrokeCapRound: true,
+          isStrokeCapRound: false,
           dotData: FlDotData(
             show: false,
           ),
@@ -291,6 +353,15 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
   }
 
+  double findSpot(documents, int index) {
+    for (var document in documents) {
+      if (document.id == days[index]) {
+        return document.data()["completed"].toDouble();
+      }
+    }
+    return 0;
+  }
+
   LineChartData avgData() {
     return LineChartData(
       lineTouchData: LineTouchData(enabled: false),
@@ -299,13 +370,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
         drawHorizontalLine: true,
         getDrawingVerticalLine: (value) {
           return FlLine(
-            color: const Color(0xff37434d),
+            color: const Color(0xffe3f2fd),
             strokeWidth: 1,
           );
         },
         getDrawingHorizontalLine: (value) {
           return FlLine(
-            color: const Color(0xff37434d),
+            color: const Color(0xffe3f2fd),
             strokeWidth: 1,
           );
         },
