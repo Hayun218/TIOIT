@@ -9,6 +9,7 @@ import 'package:pie_chart/pie_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:tiot/words.dart';
 
 var today = DateTime.now();
 var format = DateFormat('yyyy년 MM월 d일');
@@ -28,6 +29,17 @@ List<String> days = [
   sixthDate,
   todayDate
 ];
+
+String greeting() {
+  var hour = DateTime.now().hour;
+  if (hour < 12) {
+    return 'Morning';
+  }
+  if (hour < 17) {
+    return 'Afternoon';
+  }
+  return 'Evening';
+}
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -81,7 +93,12 @@ class _DashboardPageState extends State<DashboardPage> {
             ],
           ),
         ),
-        Text("오늘의 문구"),
+        SizedBox(height: 20),
+        if (greeting() == "Morning") Text((morning.toList()..shuffle()).first),
+        if (greeting() == "Afternoon")
+          Text((afternoon.toList()..shuffle()).first),
+        if (greeting() == "Evening")
+          Text((goodWords.toList()..shuffle()).first),
         SizedBox(height: 20),
         Center(
           child: Text(
