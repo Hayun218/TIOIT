@@ -9,6 +9,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 
+import 'dart:async';
+import 'dart:math';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
+import 'push_notifications.dart';
+
+final PushNotifications pushNoti = new PushNotifications();
+
 var today = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
 
@@ -20,29 +30,32 @@ CollectionReference toDo = FirebaseFirestore.instance
 Future<void> deleteToDo(data) {
   return toDo.doc(data.id).delete().then(
     (value) {
-      print('Data Deleted');
+      pushNoti.deleteNotifications(data['id']);
     },
   );
 }
 
 Future<void> saveToDo(
     String time, TextEditingController content, int priority) {
+  var contents = content.text;
   return toDo.doc().set({
     'date': todayDate,
     'time': time,
+    'id': 0,
     'content': content.text,
     'priority': priority,
     'status': "Incomplete",
-  }).then((value) => print("Data Added"));
+  }).then((value) => pushNoti.setPushNotification(0, contents, todayDate));
 }
 
 Future<void> updateTodo(
     data, String time, TextEditingController content, int priority) {
+  var contents = content.text;
   return toDo.doc(data.id).update({
     'time': time,
     'content': content.text,
     'priority': priority,
-  }).then((value) => print("Data Updated"));
+  }).then((value) => pushNoti.modifyNotifications(0, contents, todayDate));
 }
 
 // List<Map<String, Object>> status_todo = [
@@ -475,7 +488,9 @@ class _ToDoPageState extends State<ToDoPage> {
                             );
                           }),
                       IconButton(
-                          onPressed: () => addContentDialog(context, null),
+                          onPressed: () {
+                            addContentDialog(context, null);
+                          },
                           icon: Icon(Icons.add))
                     ],
                   ),

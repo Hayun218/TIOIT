@@ -146,7 +146,7 @@ class _MonthlypageState extends State<MonthlyPage> {
                 },
               ),
             ),
-            Container(
+            SizedBox(
               width: 280,
               child: StreamBuilder(
                 stream: toDoList,
