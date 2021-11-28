@@ -93,13 +93,23 @@ class _DashboardPageState extends State<DashboardPage> {
             ],
           ),
         ),
-        SizedBox(height: 20),
-        if (greeting() == "Morning") Text((morning.toList()..shuffle()).first),
+        SizedBox(height: 23),
+        if (greeting() == "Morning")
+          Text(
+            (morning.toList()..shuffle()).first,
+            style: TextStyle(fontSize: 15),
+          ),
         if (greeting() == "Afternoon")
-          Text((afternoon.toList()..shuffle()).first),
+          Text(
+            (afternoon.toList()..shuffle()).first,
+            style: TextStyle(fontSize: 15),
+          ),
         if (greeting() == "Evening")
-          Text((goodWords.toList()..shuffle()).first),
-        SizedBox(height: 20),
+          Text(
+            (goodWords.toList()..shuffle()).first,
+            style: TextStyle(fontSize: 15),
+          ),
+        SizedBox(height: 40),
         Center(
           child: Text(
             todayDate,
@@ -110,7 +120,6 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ),
         ),
-        Divider(),
         Container(
           margin: EdgeInsets.all(20),
           child: Center(
@@ -192,7 +201,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
   @override
   Widget build(BuildContext context) {
-    getTotalNumber();
     return Stack(
       children: <Widget>[
         AspectRatio(
@@ -245,33 +253,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
         ),
       ],
     );
-  }
-
-  Future getTotalNumber() async {
-    CollectionReference toDoData = FirebaseFirestore.instance
-        .collection('user')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('toDo');
-    // 수정해야함 일주일치 date는 어떻게 받아올지 구상!
-    QuerySnapshot completedN = await toDoData
-        .where("date", isEqualTo: todayDate)
-        .where("status", isEqualTo: "Complete")
-        .get();
-    QuerySnapshot totalN =
-        await toDoData.where("date", isEqualTo: todayDate).get();
-    saveSta(completedN.size, totalN.size);
-  }
-
-  Future saveSta(int comp, int total) {
-    CollectionReference toDoSta = FirebaseFirestore.instance
-        .collection('user')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('statistic');
-
-    return toDoSta
-        .doc(todayDate)
-        .set({"totalN": total, "completed": comp}).then(
-            (value) => print("save numbers"));
   }
 
   LineChartData mainData(documents) {
