@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 
+
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -19,8 +20,8 @@ import 'push_notifications.dart';
 
 final PushNotifications pushNoti = new PushNotifications();
 
-var today = DateTime.now();
-String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
+DateTime selectedDate = DateTime.now();
+String todayDate = DateFormat('yyyy년 MM월 d일').format(selectedDate);
 
 CollectionReference toDo = FirebaseFirestore.instance
     .collection('user')
@@ -392,38 +393,59 @@ class _ToDoPageState extends State<ToDoPage> {
 
   @override
   Widget build(BuildContext context) {
+    getTotalNumber();
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Align(
-          //   alignment: Alignment.bottomRight,
-          //   child: Padding(
-          //     padding: const EdgeInsets.fromLTRB(0, 0, 10, 10),
-          //     child: IconButton(
-          //       icon: const Icon(Icons.add_circle),
-          //       onPressed: () {},
-          //       iconSize: 40,
-          //     ),
-          //   ),
-          // ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                margin: EdgeInsets.fromLTRB(0, 150, 0, 0),
-                child: Text(
-                  todayDate,
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
+                margin: EdgeInsets.fromLTRB(0, 100, 0, 0),
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.fromLTRB(200, 10, 0, 0),
+                      child: IconButton(
+                          onPressed: () async {
+                            final DateTime? picked = await showDatePicker(
+                              context: context,
+                              initialDate: selectedDate, // Refer step 1
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime.now(),
+                            );
+                            if (picked != null && picked != selectedDate) {
+                              setState(() {
+                                selectedDate = picked;
+                                todayDate = DateFormat('yyyy년 MM월 d일')
+                                    .format(selectedDate);
+                                toDoList = FirebaseFirestore.instance
+                                    .collection('user')
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .collection('toDo')
+                                    .where('date', isEqualTo: todayDate)
+                                    .orderBy('time', descending: false)
+                                    .snapshots();
+                              });
+                            }
+                          },
+                          icon: Icon(Icons.calendar_today)),
+                    ),
+                    Text(
+                      todayDate,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                  ],
                 ),
               ),
               Center(
                 child: Container(
                   width: 280,
-                  margin: EdgeInsets.all(40),
+                  margin: EdgeInsets.fromLTRB(30, 30, 30, 30),
                   decoration: BoxDecoration(
                     border: Border.all(),
                   ),
@@ -502,4 +524,29 @@ class _ToDoPageState extends State<ToDoPage> {
       ),
     );
   }
+}
+
+Future getTotalNumber() async {
+  CollectionReference toDoData = FirebaseFirestore.instance
+      .collection('user')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('toDo');
+  // 수정해야함 일주일치 date는 어떻게 받아올지 구상!
+  QuerySnapshot completedN = await toDoData
+      .where("date", isEqualTo: todayDate)
+      .where("status", isEqualTo: "Complete")
+      .get();
+  QuerySnapshot totalN =
+      await toDoData.where("date", isEqualTo: todayDate).get();
+  saveSta(completedN.size, totalN.size);
+}
+
+Future saveSta(int comp, int total) {
+  CollectionReference toDoSta = FirebaseFirestore.instance
+      .collection('user')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('statistic');
+
+  return toDoSta.doc(todayDate).set({"totalN": total, "completed": comp}).then(
+      (value) => print("save numbers"));
 }

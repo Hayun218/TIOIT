@@ -56,6 +56,7 @@ dependencies:
   loading_animations: ^2.2.0
   time_range_picker: ^2.1.0
   fl_chart: ^0.40.2
+  syncfusion_flutter_datepicker: ^19.3.55
 
 dev_dependencies:
   flutter_test:

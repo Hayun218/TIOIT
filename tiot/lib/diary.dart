@@ -22,9 +22,9 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tiot/long_diary.dart';
 
-var today = DateTime.now();
-String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
-String displayDate = DateFormat('MM월 d일').format(DateTime.now());
+DateTime selectedDate = DateTime.now();
+String todayDate = DateFormat('yyyy년 MM월 d일').format(selectedDate);
+String displayDate = DateFormat('MM월 d일').format(selectedDate);
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
@@ -32,7 +32,6 @@ class DiaryPage extends StatefulWidget {
   @override
   State<DiaryPage> createState() => _DiaryPageState();
 }
-
 
 Future saveThanks(TextEditingController one, TextEditingController two,
     TextEditingController three, String uid) {
@@ -62,9 +61,8 @@ Future addDiary(String uid) {
       .doc(uid)
       .collection('diary')
       .doc(todayDate)
-      .set({"long_diary": "", "thanks": list,  "photoUrl": ""});
+      .set({"long_diary": "", "thanks": list, "photoUrl": ""});
 }
-
 
 bool _defaultImg = true;
 
@@ -158,7 +156,33 @@ class _DiaryPageState extends State<DiaryPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              height: 130,
+              margin: EdgeInsets.fromLTRB(200, 30, 0, 0),
+              child: IconButton(
+                  onPressed: () async {
+                    final DateTime? picked = await showDatePicker(
+                      context: context,
+                      initialDate: selectedDate, // Refer step 1
+                      firstDate: DateTime(2021, 11, 20),
+                      lastDate: DateTime.now(),
+                    );
+                    if (picked != null && picked != selectedDate) {
+                      setState(() {
+                        selectedDate = picked;
+                        todayDate =
+                            DateFormat('yyyy년 MM월 d일').format(selectedDate);
+                        diary = FirebaseFirestore.instance
+                            .collection('user')
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .collection('diary')
+                            .doc(todayDate)
+                            .snapshots();
+                        displayDate = DateFormat('MM월 d일').format(selectedDate);
+                      });
+                    }
+                  },
+                  icon: Icon(Icons.calendar_today)),
+            ),
+            Container(
               child: Center(
                 child: Text(
                   displayDate + " 감사일기",
