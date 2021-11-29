@@ -10,6 +10,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:tiot/words.dart';
+import 'package:weather/weather.dart';
+import 'package:location/location.dart';
+
+WeatherFactory wf = WeatherFactory("2548a763bdb778e939137dbaa880a353");
+String cityName = "Pohang";
+
+getWeather() async {
+  Weather w = await wf.currentWeatherByCityName(cityName);
+  double? celsius = w.temperature!.celsius;
+
+  return celsius;
+}
 
 var today = DateTime.now();
 var format = DateFormat('yyyy년 MM월 d일');

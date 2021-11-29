@@ -269,79 +269,71 @@ void addContentDialog(context, data) {
             scrollDirection: Axis.vertical,
             child: StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) {
-              return Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.all(10),
-                      child: const Text("Time: "),
-                    ),
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () async {
-                            TimeRange result = await showTimeRangePicker(
-                              context: context,
-                            );
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    child: const Text("Time: "),
+                  ),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          TimeRange result = await showTimeRangePicker(
+                            context: context,
+                          );
 
-                            setState(() => timeI = result.startTime
-                                    .toString()
-                                    .replaceAll(RegExp('[A-Za-z]'), '')
-                                    .replaceAll("(", "")
-                                    .replaceAll(")", "") +
-                                " - " +
-                                result.endTime
-                                    .toString()
-                                    .replaceAll(RegExp('[A-Za-z]'), '')
-                                    .replaceAll("(", "")
-                                    .replaceAll(")", ""));
-                          },
-                          child: Text("Selete Time"),
+                          setState(() => timeI = result.startTime
+                                  .toString()
+                                  .replaceAll(RegExp('[A-Za-z]'), '')
+                                  .replaceAll("(", "")
+                                  .replaceAll(")", "") +
+                              " - " +
+                              result.endTime
+                                  .toString()
+                                  .replaceAll(RegExp('[A-Za-z]'), '')
+                                  .replaceAll("(", "")
+                                  .replaceAll(")", ""));
+                        },
+                        child: Text("Selete Time"),
+                      ),
+                      SizedBox(width: 20),
+                      Text(timeI),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Text("Priority: "),
+                      DropdownButton(
+                        value: _value,
+                        items: listItems.map((int value) {
+                          return DropdownMenuItem<int>(
+                            value: value,
+                            child: Text("$value 순위"),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() => _value = value as int);
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Text("Content: "),
+                      Expanded(
+                        child: TextField(
+                          maxLines: null,
+                          controller: _content,
                         ),
-                        SizedBox(width: 20),
-                        Text(timeI),
-
-                        // Expanded(
-                        //   child: TextField(
-                        //     controller: _time,
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Text("Priority: "),
-                        DropdownButton(
-                          value: _value,
-                          items: listItems.map((int value) {
-                            return DropdownMenuItem<int>(
-                              value: value,
-                              child: Text("$value 순위"),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() => _value = value as int);
-                          },
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Text("Content: "),
-                        Expanded(
-                          child: TextField(
-                            maxLines: null,
-                            controller: _content,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               );
             }),
           ),
@@ -393,9 +385,11 @@ class _ToDoPageState extends State<ToDoPage> {
       .orderBy('time', descending: false)
       .snapshots();
 
+  bool isFull = false;
+
   @override
   Widget build(BuildContext context) {
-    getTotalNumber();
+    getTotalNumber(true);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
@@ -405,7 +399,7 @@ class _ToDoPageState extends State<ToDoPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                margin: EdgeInsets.fromLTRB(0, 100, 0, 0),
+                margin: EdgeInsets.fromLTRB(0, 80, 0, 0),
                 child: Column(
                   children: [
                     Container(
@@ -448,6 +442,7 @@ class _ToDoPageState extends State<ToDoPage> {
               Center(
                 child: Container(
                   width: 280,
+                  height: 420,
                   margin: EdgeInsets.fromLTRB(30, 30, 30, 30),
                   decoration: BoxDecoration(
                     border: Border.all(),
@@ -473,6 +468,8 @@ class _ToDoPageState extends State<ToDoPage> {
                             if (!snapshot.hasData) {
                               return LoadingFlipping.circle();
                             }
+                            var len = toDoList.length;
+                            print(len);
 
                             return ListView.builder(
                               scrollDirection: Axis.vertical,
@@ -513,11 +510,21 @@ class _ToDoPageState extends State<ToDoPage> {
                             );
                           }),
                       IconButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (todayDate ==
-                                DateFormat('yyyy년 MM월 d일')
-                                    .format(DateTime.now())) {
+                                    DateFormat('yyyy년 MM월 d일')
+                                        .format(DateTime.now()) &&
+                                await getTotalNumber(false) < 7) {
                               addContentDialog(context, null);
+                            }
+                            print(todayDate);
+                            if (await getTotalNumber(false) >= 7) {
+                              final snackBar = SnackBar(
+                                  content: Text(
+                                      'You can plan for 7 tasks for a day!'));
+
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
                             }
                           },
                           icon: Icon(todayDate ==
@@ -537,19 +544,20 @@ class _ToDoPageState extends State<ToDoPage> {
   }
 }
 
-Future getTotalNumber() async {
+Future getTotalNumber(bool isSave) async {
   CollectionReference toDoData = FirebaseFirestore.instance
       .collection('user')
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('toDo');
-  // 수정해야함 일주일치 date는 어떻게 받아올지 구상!
+
   QuerySnapshot completedN = await toDoData
       .where("date", isEqualTo: todayDate)
       .where("status", isEqualTo: "Complete")
       .get();
   QuerySnapshot totalN =
       await toDoData.where("date", isEqualTo: todayDate).get();
-  saveSta(completedN.size, totalN.size);
+  if (isSave) saveSta(completedN.size, totalN.size);
+  return await totalN.size;
 }
 
 Future saveSta(int comp, int total) {

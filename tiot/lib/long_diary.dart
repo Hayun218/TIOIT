@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loading_animations/loading_animations.dart';
 
-var today = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
 User user = FirebaseAuth.instance.currentUser!;
 
@@ -45,6 +44,9 @@ Future<void> makeLongDiary() {
 TextEditingController _diaryCtrl = TextEditingController();
 
 class LongDiary extends StatefulWidget {
+  final String selectedDate;
+  LongDiary({required this.selectedDate});
+
   @override
   _LongDiaryState createState() => _LongDiaryState();
 }
@@ -52,6 +54,7 @@ class LongDiary extends StatefulWidget {
 class _LongDiaryState extends State<LongDiary> {
   @override
   Widget build(BuildContext context) {
+    todayDate = widget.selectedDate;
     return Scaffold(
       body: StreamBuilder(
         stream: longDiary,
