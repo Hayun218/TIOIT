@@ -247,7 +247,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               style: TextStyle(
                   fontSize: 12,
                   color:
-                      showAvg ? Colors.black.withOpacity(0.2) : Colors.black),
+                      showAvg ? Colors.black.withOpacity(0.3) : Colors.black),
             ),
           ),
         ),
@@ -361,11 +361,14 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   double findPer(documents, int index) {
+    double comp = 0;
+    double total = 0;
     for (var document in documents) {
       if (document.id == days[index]) {
-        double comp = document.data()["completed"].toDouble();
-        double total = document.data()["totalN"].toDouble();
-        return (comp / total * 100);
+        comp = document.data()["completed"].toDouble();
+        total = document.data()["totalN"].toDouble();
+        if (total == 0) return 0;
+        return ((comp / total) * 100).roundToDouble();
       }
     }
     return 0;
