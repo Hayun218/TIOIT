@@ -9,7 +9,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 
-
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -395,6 +394,7 @@ class _ToDoPageState extends State<ToDoPage> {
   Widget build(BuildContext context) {
     getTotalNumber();
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: Stack(
         children: [
