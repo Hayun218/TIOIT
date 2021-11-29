@@ -514,9 +514,17 @@ class _ToDoPageState extends State<ToDoPage> {
                           }),
                       IconButton(
                           onPressed: () {
-                            addContentDialog(context, null);
+                            if (todayDate ==
+                                DateFormat('yyyy년 MM월 d일')
+                                    .format(DateTime.now())) {
+                              addContentDialog(context, null);
+                            }
                           },
-                          icon: Icon(Icons.add))
+                          icon: Icon(todayDate ==
+                                  DateFormat('yyyy년 MM월 d일')
+                                      .format(DateTime.now())
+                              ? Icons.add
+                              : null))
                     ],
                   ),
                 ),
