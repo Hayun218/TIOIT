@@ -265,83 +265,86 @@ void addContentDialog(context, data) {
               },
             ),
           ],
-          content: StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            return Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    child: const Text("Time: "),
-                  ),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () async {
-                          TimeRange result = await showTimeRangePicker(
-                            context: context,
-                          );
+          content: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+              return Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      child: const Text("Time: "),
+                    ),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () async {
+                            TimeRange result = await showTimeRangePicker(
+                              context: context,
+                            );
 
-                          setState(() => timeI = result.startTime
-                                  .toString()
-                                  .replaceAll(RegExp('[A-Za-z]'), '')
-                                  .replaceAll("(", "")
-                                  .replaceAll(")", "") +
-                              " - " +
-                              result.endTime
-                                  .toString()
-                                  .replaceAll(RegExp('[A-Za-z]'), '')
-                                  .replaceAll("(", "")
-                                  .replaceAll(")", ""));
-                        },
-                        child: Text("Selete Time"),
-                      ),
-                      SizedBox(width: 20),
-                      Text(timeI),
-
-                      // Expanded(
-                      //   child: TextField(
-                      //     controller: _time,
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Text("Priority: "),
-                      DropdownButton(
-                        value: _value,
-                        items: listItems.map((int value) {
-                          return DropdownMenuItem<int>(
-                            value: value,
-                            child: Text("$value 순위"),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() => _value = value as int);
-                        },
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Text("Content: "),
-                      Expanded(
-                        child: TextField(
-                          maxLines: null,
-                          controller: _content,
+                            setState(() => timeI = result.startTime
+                                    .toString()
+                                    .replaceAll(RegExp('[A-Za-z]'), '')
+                                    .replaceAll("(", "")
+                                    .replaceAll(")", "") +
+                                " - " +
+                                result.endTime
+                                    .toString()
+                                    .replaceAll(RegExp('[A-Za-z]'), '')
+                                    .replaceAll("(", "")
+                                    .replaceAll(")", ""));
+                          },
+                          child: Text("Selete Time"),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          }),
+                        SizedBox(width: 20),
+                        Text(timeI),
+
+                        // Expanded(
+                        //   child: TextField(
+                        //     controller: _time,
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Text("Priority: "),
+                        DropdownButton(
+                          value: _value,
+                          items: listItems.map((int value) {
+                            return DropdownMenuItem<int>(
+                              value: value,
+                              child: Text("$value 순위"),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() => _value = value as int);
+                          },
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Text("Content: "),
+                        Expanded(
+                          child: TextField(
+                            maxLines: null,
+                            controller: _content,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ),
         );
       });
 }
