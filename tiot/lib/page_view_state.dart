@@ -90,6 +90,7 @@ class _HighlightPageState extends State<HighlightPage> {
       ),
     );
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       bottomNavigationBar: appBar(context),
       body: PageView(
