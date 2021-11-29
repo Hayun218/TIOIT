@@ -300,8 +300,11 @@ class _DiaryPageState extends State<DiaryPage> {
                   size: 30,
                 ),
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LongDiary()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              LongDiary(selectedDate: todayDate)));
                 }),
           ),
         ),

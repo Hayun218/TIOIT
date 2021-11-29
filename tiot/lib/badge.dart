@@ -49,24 +49,13 @@ class _BadgedPageState extends State<BadgedPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            child: Center(
-              child: Text(
-                todayDate + "\n Badge Page",
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            ),
-          ),
+          SizedBox(height: 40),
           Expanded(
             child: Container(
               child: GridView.count(
                 crossAxisCount: 3,
                 childAspectRatio: 9 / 10,
-                children: List.generate(11, (index) {
+                children: List.generate(12, (index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
