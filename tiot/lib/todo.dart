@@ -9,7 +9,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 
-
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -511,9 +510,17 @@ class _ToDoPageState extends State<ToDoPage> {
                           }),
                       IconButton(
                           onPressed: () {
-                            addContentDialog(context, null);
+                            if (todayDate ==
+                                DateFormat('yyyy년 MM월 d일')
+                                    .format(DateTime.now())) {
+                              addContentDialog(context, null);
+                            }
                           },
-                          icon: Icon(Icons.add))
+                          icon: Icon(todayDate ==
+                                  DateFormat('yyyy년 MM월 d일')
+                                      .format(DateTime.now())
+                              ? Icons.add
+                              : null))
                     ],
                   ),
                 ),

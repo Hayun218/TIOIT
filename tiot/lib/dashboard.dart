@@ -228,7 +228,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
                     List<DocumentSnapshot> documents = snapshot.data.docs;
 
                     return LineChart(
-                        showAvg ? mainData(documents) : mainData(documents));
+                        showAvg ? showPer(documents) : mainData(documents));
                   }),
             ),
           ),
@@ -243,7 +243,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               });
             },
             child: Text(
-              'avg',
+              'per',
               style: TextStyle(
                   fontSize: 12,
                   color:
@@ -302,12 +302,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
           ),
           getTitles: (value) {
             switch (value.toInt()) {
-              case 1:
-                return '1';
-              case 5:
-                return '5';
-              case 10:
-                return '10';
+              case 0:
+                return '0';
+              case 3:
+                return '3';
+              case 6:
+                return '6';
             }
             return '';
           },
@@ -321,7 +321,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
       minX: 0,
       maxX: 7,
       minY: 0,
-      maxY: 12,
+      maxY: 8,
       lineBarsData: [
         LineChartBarData(
           spots: [
@@ -360,50 +360,57 @@ class _LineChartSample2State extends State<LineChartSample2> {
     return 0;
   }
 
-  LineChartData avgData() {
+  double findPer(documents, int index) {
+    for (var document in documents) {
+      if (document.id == days[index]) {
+        double comp = document.data()["completed"].toDouble();
+        double total = document.data()["totalN"].toDouble();
+        return (comp / total * 100);
+      }
+    }
+    return 0;
+  }
+
+  LineChartData showPer(documents) {
     return LineChartData(
-      lineTouchData: LineTouchData(enabled: false),
       gridData: FlGridData(
-        show: true,
-        drawHorizontalLine: true,
-        getDrawingVerticalLine: (value) {
-          return FlLine(
-            color: const Color(0xffe3f2fd),
-            strokeWidth: 1,
-          );
-        },
-        getDrawingHorizontalLine: (value) {
-          return FlLine(
-            color: const Color(0xffe3f2fd),
-            strokeWidth: 1,
-          );
-        },
+        show: false,
+        drawVerticalLine: false,
       ),
       titlesData: FlTitlesData(
         show: true,
+        rightTitles: SideTitles(showTitles: false),
+        topTitles: SideTitles(showTitles: false),
         bottomTitles: SideTitles(
           showTitles: true,
-          reservedSize: 22,
-          getTextStyles: (context, value) => const TextStyle(
-              color: Color(0xff68737d),
-              fontWeight: FontWeight.bold,
-              fontSize: 16),
+          reservedSize: 20,
+          interval: 1,
+          getTextStyles: (context, value) =>
+              const TextStyle(color: Color(0xff68737d), fontSize: 12),
           getTitles: (value) {
             switch (value.toInt()) {
+              case 1:
+                return firstDate.split(" ")[2];
               case 2:
-                return 'MAR';
+                return secondDate.split(" ")[2];
+              case 3:
+                return thirdDate.split(" ")[2];
+              case 4:
+                return fourthDate.split(" ")[2];
               case 5:
-                return 'JUN';
-              case 8:
-                return 'SEP';
+                return fifthDate.split(" ")[2];
+              case 6:
+                return sixthDate.split(" ")[2];
+              case 7:
+                return todayDate.split(" ")[2];
             }
             return '';
           },
           margin: 8,
-          interval: 1,
         ),
         leftTitles: SideTitles(
           showTitles: true,
+          interval: 1,
           getTextStyles: (context, value) => const TextStyle(
             color: Color(0xff67727d),
             fontWeight: FontWeight.bold,
@@ -411,60 +418,50 @@ class _LineChartSample2State extends State<LineChartSample2> {
           ),
           getTitles: (value) {
             switch (value.toInt()) {
-              case 1:
-                return '10k';
-              case 3:
-                return '30k';
-              case 5:
-                return '50k';
+              case 0:
+                return '0';
+              case 50:
+                return '50';
+              case 100:
+                return '100';
             }
             return '';
           },
           reservedSize: 32,
-          interval: 1,
-          margin: 12,
+          margin: 13,
         ),
-        topTitles: SideTitles(showTitles: false),
-        rightTitles: SideTitles(showTitles: false),
       ),
       borderData: FlBorderData(
           show: true,
           border: Border.all(color: const Color(0xff37434d), width: 1)),
       minX: 0,
-      maxX: 11,
+      maxX: 7,
       minY: 0,
-      maxY: 6,
+      maxY: 110,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3.44),
-            FlSpot(2.6, 3.44),
-            FlSpot(4.9, 3.44),
-            FlSpot(6.8, 3.44),
-            FlSpot(8, 3.44),
-            FlSpot(9.5, 3.44),
-            FlSpot(11, 3.44),
+          spots: [
+            FlSpot(0, 0),
+            FlSpot(1, findPer(documents, 0)),
+            FlSpot(2, findPer(documents, 1)),
+            FlSpot(3, findPer(documents, 2)),
+            FlSpot(4, findPer(documents, 3)),
+            FlSpot(5, findPer(documents, 4)),
+            FlSpot(6, findPer(documents, 5)),
+            FlSpot(7, findPer(documents, 6)),
           ],
           isCurved: true,
-          colors: [
-            ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                .lerp(0.2)!,
-            ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                .lerp(0.2)!,
-          ],
+          colors: gradientColors,
           barWidth: 5,
-          isStrokeCapRound: true,
+          isStrokeCapRound: false,
           dotData: FlDotData(
             show: false,
           ),
-          belowBarData: BarAreaData(show: true, colors: [
-            ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                .lerp(0.2)!
-                .withOpacity(0.1),
-            ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                .lerp(0.2)!
-                .withOpacity(0.1),
-          ]),
+          belowBarData: BarAreaData(
+            show: true,
+            colors:
+                gradientColors.map((color) => color.withOpacity(0.3)).toList(),
+          ),
         ),
       ],
     );
