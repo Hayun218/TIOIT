@@ -31,11 +31,14 @@ Future<void> initialize() async {
 
 class PushNotifications {
   Future<void> setPushNotification(int id, String content, String date) async {
+    final birthday = DateTime(2021, 11, 29, 11, 00);
+    final date2 = DateTime.now();
+    final difference = date2.difference(birthday).inMinutes;
     initialize();
     await flutterLocalNotificationsPlugin.zonedSchedule(
         0,
         'add',
-        'first add list: ' + content,
+        'first add list: ' + content + "\ntime" + difference.toString(),
         tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
         const NotificationDetails(
             android: AndroidNotificationDetails(
