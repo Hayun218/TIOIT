@@ -558,6 +558,7 @@ Future saveSta(int comp, int total) {
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('statistic');
 
-  return toDoSta.doc(todayDate).set({"totalN": total, "completed": comp}).then(
-      (value) => print("save numbers"));
+  return toDoSta
+      .doc(todayDate)
+      .set({"totalN": total, "completed": comp}).then((value) => print("save"));
 }
