@@ -38,6 +38,7 @@ Future<void> deleteToDo(data) {
 Future<void> saveToDo(
     String time, TextEditingController content, int priority) {
   var contents = content.text;
+  String times = time;
   return toDo.doc().set({
     'date': todayDate,
     'time': time,
@@ -45,7 +46,9 @@ Future<void> saveToDo(
     'content': content.text,
     'priority': priority,
     'status': "Incomplete",
-  }).then((value) => pushNoti.setPushNotification(0, contents, todayDate));
+  }).then(
+      // TODO: modify id
+      (value) => pushNoti.setPushNotification(0, contents, todayDate, times));
 }
 
 Future<void> updateTodo(
@@ -55,7 +58,9 @@ Future<void> updateTodo(
     'time': time,
     'content': content.text,
     'priority': priority,
-  }).then((value) => pushNoti.modifyNotifications(0, contents, todayDate));
+  }).then(
+      // TODO: modify id
+      (value) => pushNoti.modifyNotifications(0, contents, todayDate, time));
 }
 
 // List<Map<String, Object>> status_todo = [
@@ -86,7 +91,11 @@ void showStatus(context, data) {
               ButtonBar(
                 children: [
                   TextButton(
-                    onPressed: () => updateStatus(data, 'Complete', context),
+                    onPressed: () {
+                      updateStatus(data, 'Complete', context);
+                      // TODO: modify id
+                      pushNoti.deleteNotifications(0);
+                    },
                     child: Row(
                       children: [
                         Icon(
