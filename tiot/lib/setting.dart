@@ -186,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               children: [
                 Text(
-                  'Version: 2.4.0 (287)',
+                  'Version: 0.12.2',
                   style: TextStyle(color: Color(0xFF777777)),
                 ),
               ],
