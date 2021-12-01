@@ -31,8 +31,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           color: Colors.black,
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Settings UI',
+        title: const Text(
+          'Settings',
           style: TextStyle(
             color: Colors.black,
           ),
@@ -123,8 +123,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SettingsSection(
             title: 'Account',
             tiles: [
-              SettingsTile(title: 'Phone number', leading: Icon(Icons.phone)),
-              SettingsTile(title: 'Email', leading: Icon(Icons.email)),
+              SettingsTile(
+                title: '계정 정보 변경',
+                leading: Icon(Icons.account_circle),
+                onPressed: (context) {},
+              ),
               SettingsTile(
                 title: 'Sign out',
                 leading: Icon(Icons.exit_to_app),
@@ -170,28 +173,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 switchValue: true,
                 onToggle: (value) {},
               ),
+              SettingsTile(
+                title: 'Version',
+                leading: Icon(Icons.check),
+                onPressed: (context) {
+                  final snackBar = SnackBar(
+                    content: Text('Version: 0.13.1'),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                },
+              ),
             ],
           ),
-          SettingsSection(
-            title: 'Misc',
-            tiles: [
-              SettingsTile(
-                  title: 'Terms of Service', leading: Icon(Icons.description)),
-              SettingsTile(
-                  title: 'Open source licenses',
-                  leading: Icon(Icons.collections_bookmark)),
-            ],
-          ),
-          CustomSection(
-            child: Column(
-              children: [
-                Text(
-                  'Version: 0.12.2',
-                  style: TextStyle(color: Color(0xFF777777)),
-                ),
-              ],
-            ),
-          ),
+//          CustomSection(
+//            child: Column(
+//              children: [
+//                Text(
+//                  'Version: 0.12.2',
+//                  style: TextStyle(color: Color(0xFF777777)),
+//                ),
+//              ],
+//            ),
+//          ),
         ],
       ),
     );
