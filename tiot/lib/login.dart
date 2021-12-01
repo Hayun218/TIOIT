@@ -44,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       'email': user.email,
       'name': user.displayName,
       'uid': user.uid,
+      'NumOfList': 0
     });
   }
 
@@ -63,7 +64,6 @@ class _LoginPageState extends State<LoginPage> {
       'status': "Incomplete",
     });
   }
-
 
   @override
   Widget build(BuildContext context) {

@@ -22,6 +22,7 @@ bool isInt(String str) {
 final List<int> timeList = [];
 
 List<int> extractTime(String date, String time) {
+  timeList.clear();
   timeList.add(int.parse(date.substring(0, 4)));
   if (isInt(date.substring(6, 8))) {
     timeList.add(int.parse(date.substring(6, 8)));
@@ -68,21 +69,19 @@ class PushNotifications {
     final today = DateTime.now();
     final difference = alert.difference(today).inMinutes + 1;
     initialize();
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-        id,
-        'reminder',
-        '[' + content + '] will begin in 10 minutes.',
-        tz.TZDateTime.now(tz.local).add(Duration(minutes: difference - 10)),
-        const NotificationDetails(
-            android: AndroidNotificationDetails(
-                ChannelId, ChannelName, ChannelDescription)),
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime);
-    if (difference <= 10) {
-      await flutterLocalNotificationsPlugin.cancel(id);
+    if (difference >= 10) {
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+          id,
+          'reminder',
+          '[' + content + '] will begin in 10 minutes.' + id.toString(),
+          tz.TZDateTime.now(tz.local).add(Duration(minutes: difference - 10)),
+          const NotificationDetails(
+              android: AndroidNotificationDetails(
+                  ChannelId, ChannelName, ChannelDescription)),
+          androidAllowWhileIdle: true,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime);
     }
-    timeList.clear();
   }
 
   Future<void> modifyNotifications(
@@ -93,21 +92,19 @@ class PushNotifications {
     final today = DateTime.now();
     final difference = alert.difference(today).inMinutes + 1;
     initialize();
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-        id,
-        "reminder",
-        '[' + content + '] will begin in 10 minutes.',
-        tz.TZDateTime.now(tz.local).add(Duration(minutes: difference - 10)),
-        const NotificationDetails(
-            android: AndroidNotificationDetails(
-                ChannelId, ChannelName, ChannelDescription)),
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime);
-    if (difference <= 10) {
-      await flutterLocalNotificationsPlugin.cancel(id);
+    if (difference >= 10) {
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+          id,
+          "reminder",
+          '[' + content + '] will begin in 10 minutes.' + id.toString(),
+          tz.TZDateTime.now(tz.local).add(Duration(minutes: difference - 10)),
+          const NotificationDetails(
+              android: AndroidNotificationDetails(
+                  ChannelId, ChannelName, ChannelDescription)),
+          androidAllowWhileIdle: true,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime);
     }
-    timeList.clear();
   }
 
   Future<void> deleteNotifications(int id) async {
@@ -123,6 +120,6 @@ class PushNotifications {
 //        androidAllowWhileIdle: true,
 //        uiLocalNotificationDateInterpretation:
 //            UILocalNotificationDateInterpretation.absoluteTime);
-    await flutterLocalNotificationsPlugin.cancel(id);
+    await flutterLocalNotificationsPlugin.cancel(1);
   }
 }
