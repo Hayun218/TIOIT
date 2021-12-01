@@ -538,9 +538,9 @@ class _ToDoPageState extends State<ToDoPage> {
                             print(todayDate);
                             if (await getTotalNumber(false) >= 7) {
                               final snackBar = SnackBar(
-                                  content: Text(
-                                      'You can plan for 7 tasks for a day!'));
-
+                                content:
+                                    Text('You can plan for 7 tasks for a day!'),
+                              );
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
                             }
