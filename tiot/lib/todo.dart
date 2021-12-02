@@ -21,6 +21,7 @@ final PushNotifications pushNoti = new PushNotifications();
 
 DateTime selectedDate = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(selectedDate);
+bool isAdd = true;
 
 CollectionReference toDo = FirebaseFirestore.instance
     .collection('user')
@@ -410,7 +411,7 @@ class _ToDoPageState extends State<ToDoPage> {
                               context: context,
                               initialDate: selectedDate, // Refer step 1
                               firstDate: DateTime(2000),
-                              lastDate: DateTime.now(),
+                              lastDate: DateTime(2023),
                             );
                             if (picked != null && picked != selectedDate) {
                               setState(() {
@@ -424,6 +425,12 @@ class _ToDoPageState extends State<ToDoPage> {
                                     .where('date', isEqualTo: todayDate)
                                     .orderBy('time', descending: false)
                                     .snapshots();
+                                if (selectedDate.isAfter(DateTime.now()
+                                    .subtract(Duration(days: 1)))) {
+                                  isAdd = true;
+                                } else {
+                                  isAdd = false;
+                                }
                               });
                             }
                           },
@@ -510,28 +517,24 @@ class _ToDoPageState extends State<ToDoPage> {
                             );
                           }),
                       IconButton(
-                          onPressed: () async {
-                            if (todayDate ==
-                                    DateFormat('yyyy년 MM월 d일')
-                                        .format(DateTime.now()) &&
-                                await getTotalNumber(false) < 7) {
-                              addContentDialog(context, null);
-                            }
-                            print(todayDate);
-                            if (await getTotalNumber(false) >= 7) {
-                              final snackBar = SnackBar(
-                                  content: Text(
-                                      'You can plan for 7 tasks for a day!'));
+                        icon: Icon(isAdd ? Icons.add : null),
+                        onPressed: () async {
+                          if (selectedDate.isAfter(
+                                  DateTime.now().subtract(Duration(days: 1))) &&
+                              await getTotalNumber(false) < 7) {
+                            addContentDialog(context, null);
+                          }
 
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                            }
-                          },
-                          icon: Icon(todayDate ==
-                                  DateFormat('yyyy년 MM월 d일')
-                                      .format(DateTime.now())
-                              ? Icons.add
-                              : null))
+                          if (await getTotalNumber(false) >= 7) {
+                            final snackBar = const SnackBar(
+                                content: Text(
+                                    'You can plan for 7 tasks for a day!'));
+
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ),
