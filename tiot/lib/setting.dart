@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'languages_screen.dart';
+import 'fonts.dart';
 
 class SettingsScreen extends StatefulWidget {
   final Function() signOut;
@@ -114,9 +115,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
 //              ),
 //            ),
               SettingsTile(
-                title: 'Environment',
+                title: 'Font',
                 subtitle: 'Production',
                 leading: Icon(Icons.cloud_queue),
+                onPressed: (context) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FontPage()),
+                  );
+                },
               ),
             ],
           ),
@@ -178,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 leading: Icon(Icons.check),
                 onPressed: (context) {
                   final snackBar = SnackBar(
-                    content: Text('Version: 0.13.1'),
+                    content: Text('Version: 0.14.1'),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
