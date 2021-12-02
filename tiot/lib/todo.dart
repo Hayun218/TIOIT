@@ -10,14 +10,12 @@ import 'package:loading_animations/loading_animations.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 
 import 'dart:async';
-import 'dart:math';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 import 'push_notifications.dart';
 
 final PushNotifications pushNoti = new PushNotifications();
+
+User? currentUser = FirebaseAuth.instance.currentUser;
 
 DateTime selectedDate = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(selectedDate);
@@ -27,6 +25,9 @@ CollectionReference toDo = FirebaseFirestore.instance
     .collection('user')
     .doc(FirebaseAuth.instance.currentUser!.uid)
     .collection('toDo');
+CollectionReference users = FirebaseFirestore.instance.collection('user');
+
+dynamic id = 0;
 
 Future<void> deleteToDo(data) {
   return toDo.doc(data.id).delete().then(
@@ -37,26 +38,39 @@ Future<void> deleteToDo(data) {
 }
 
 Future<void> saveToDo(
-    String time, TextEditingController content, int priority) {
+    String time, TextEditingController content, int priority) async {
   var contents = content.text;
-  return toDo.doc().set({
+  String times = time;
+  int id = 0;
+  await users.doc(currentUser!.uid).get().then((value) {
+    id = value.get('NumOfList');
+  });
+  return await toDo.doc().set({
     'date': todayDate,
     'time': time,
-    'id': 0,
-    'content': content.text,
+    'id': id,
+    'content': contents,
     'priority': priority,
     'status': "Incomplete",
-  }).then((value) => pushNoti.setPushNotification(0, contents, todayDate));
+  }).then(
+      // TODO: modify id
+      (value) {
+    pushNoti.setPushNotification(id, contents, todayDate, times);
+    users.doc(currentUser!.uid).update({'NumOfList': id++ + 1});
+  });
 }
 
 Future<void> updateTodo(
     data, String time, TextEditingController content, int priority) {
+  int id = data['id'];
   var contents = content.text;
   return toDo.doc(data.id).update({
     'time': time,
     'content': content.text,
     'priority': priority,
-  }).then((value) => pushNoti.modifyNotifications(0, contents, todayDate));
+  }).then(
+      // TODO: modify id
+      (value) => pushNoti.modifyNotifications(id, contents, todayDate, time));
 }
 
 // List<Map<String, Object>> status_todo = [
@@ -87,7 +101,11 @@ void showStatus(context, data) {
               ButtonBar(
                 children: [
                   TextButton(
-                    onPressed: () => updateStatus(data, 'Complete', context),
+                    onPressed: () {
+                      updateStatus(data, 'Complete', context);
+                      // TODO: modify id
+                      pushNoti.deleteNotifications(0);
+                    },
                     child: Row(
                       children: [
                         Icon(
@@ -517,6 +535,7 @@ class _ToDoPageState extends State<ToDoPage> {
                             );
                           }),
                       IconButton(
+
                         icon: Icon(isAdd ? Icons.add : null),
                         onPressed: () async {
                           if (selectedDate.isAfter(
@@ -535,6 +554,7 @@ class _ToDoPageState extends State<ToDoPage> {
                           }
                         },
                       ),
+
                     ],
                   ),
                 ),
