@@ -62,7 +62,7 @@ Future<void> getLocationData() async {
 }
 
 class Weather {
-  final int temp; //현재 온도
+  final double temp; //현재 온도
   final double tempMin; //최저 온도
   final double tempMax; //최고 온도
   final String weatherMain; //흐림정도
@@ -89,9 +89,9 @@ Future<Weather?> getWeather() async {
     data1 = json.decode(response.body); //받은 정보를 json형태로 decode
     //받은 데이터정보를 필요한 형태로 저장한다.
     weather = Weather(
-        temp: data1["main"]["temp"],
-        tempMax: data1["main"]["temp_max"],
-        tempMin: data1["main"]["temp_min"],
+        temp: data1["main"]["temp"].toDouble(),
+        tempMax: data1["main"]["temp_max"].toDouble(),
+        tempMin: data1["main"]["temp_min"].toDouble(),
         weatherMain: data1["weather"][0]
             ["main"], //weather부분의 경우 리스트로 json에 들어가고 있기 때문에 첫번째것을 쓴다고 표시를 해준다.
         code: data1["weather"][0]
