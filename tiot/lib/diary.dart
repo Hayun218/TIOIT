@@ -53,15 +53,26 @@ Future saveThanks(TextEditingController one, TextEditingController two,
 }
 
 // Collection 에 Diary Docs  추가하기
-Future addDiary(String uid) {
+Future addDiary(String uid) async {
   List<String> list = [];
 
-  return FirebaseFirestore.instance
+  var check = await FirebaseFirestore.instance
       .collection('user')
       .doc(uid)
       .collection('diary')
       .doc(todayDate)
-      .set({"long_diary": "", "thanks": list, "photoUrl": ""});
+      .get();
+
+  if (!check.exists) {
+    return FirebaseFirestore.instance
+        .collection('user')
+        .doc(uid)
+        .collection('diary')
+        .doc(todayDate)
+        .set({"long_diary": "", "thanks": list, "photoUrl": ""});
+  } else {
+    return null;
+  }
 }
 
 bool _defaultImg = true;
@@ -131,6 +142,17 @@ class _DiaryPageState extends State<DiaryPage> {
     }
   }
 
+  Future<bool> checkExist(String format) async {
+    var doc = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('diary')
+        .doc(format)
+        .get();
+    if (doc.exists) return true;
+    return false;
+  }
+
   final _picker = ImagePicker();
 
   getFromGallery() async {
@@ -165,17 +187,21 @@ class _DiaryPageState extends State<DiaryPage> {
                       firstDate: DateTime(2021, 11, 20),
                       lastDate: DateTime.now(),
                     );
+
+                    diary = FirebaseFirestore.instance
+                        .collection('user')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection('diary')
+                        .doc(todayDate)
+                        .snapshots();
+
                     if (picked != null && picked != selectedDate) {
                       setState(() {
                         selectedDate = picked;
                         todayDate =
                             DateFormat('yyyy년 MM월 d일').format(selectedDate);
-                        diary = FirebaseFirestore.instance
-                            .collection('user')
-                            .doc(FirebaseAuth.instance.currentUser!.uid)
-                            .collection('diary')
-                            .doc(todayDate)
-                            .snapshots();
+                        addDiary(FirebaseAuth.instance.currentUser!.uid);
+
                         displayDate = DateFormat('MM월 d일').format(selectedDate);
                       });
                     }
@@ -221,6 +247,7 @@ class _DiaryPageState extends State<DiaryPage> {
                   }
                   if (!snapshot.hasData) {
                     addDiary(FirebaseAuth.instance.currentUser!.uid);
+
                     return LoadingFlipping.circle();
                   }
 

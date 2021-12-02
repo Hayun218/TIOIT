@@ -8,20 +8,14 @@ import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loading_animations/loading_animations.dart';
 
-String todayDate = DateFormat('yyyy년 MM월 d일').format(DateTime.now());
+DateTime selectedDate = DateTime.now();
+String todayDate = DateFormat('yyyy년 MM월 d일').format(selectedDate);
 User user = FirebaseAuth.instance.currentUser!;
 
 CollectionReference user_diary = FirebaseFirestore.instance
     .collection('user')
     .doc(user.uid)
     .collection('diary');
-
-Stream longDiary = FirebaseFirestore.instance
-    .collection('user')
-    .doc(user.uid)
-    .collection('diary')
-    .doc(todayDate)
-    .snapshots();
 
 Future<void> saveLongDiary(TextEditingController ctrl) {
   return user_diary.doc(todayDate).set(
@@ -55,6 +49,14 @@ class _LongDiaryState extends State<LongDiary> {
   @override
   Widget build(BuildContext context) {
     todayDate = widget.selectedDate;
+
+    Stream longDiary = FirebaseFirestore.instance
+        .collection('user')
+        .doc(user.uid)
+        .collection('diary')
+        .doc(todayDate)
+        .snapshots();
+
     return Scaffold(
       body: StreamBuilder(
         stream: longDiary,

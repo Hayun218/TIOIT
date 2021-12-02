@@ -12,16 +12,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:tiot/words.dart';
 import 'package:weather/weather.dart';
 import 'package:location/location.dart';
-
-WeatherFactory wf = WeatherFactory("2548a763bdb778e939137dbaa880a353");
-String cityName = "Pohang";
-
-getWeather() async {
-  Weather w = await wf.currentWeatherByCityName(cityName);
-  double? celsius = w.temperature!.celsius;
-
-  return celsius;
-}
+import 'dart:convert'; //json으로 바꿔주기 위해 필요한 패키지
+import 'package:flutter/material.dart';
+import 'package:http/http.dart'
+    as http; //api 호출을 위해 필요한 패키지(as를 이용하여 해당 패키지의 이름을 설정해준다.)
 
 var today = DateTime.now();
 var format = DateFormat('yyyy년 MM월 d일');
@@ -51,6 +45,63 @@ String greeting() {
     return 'Afternoon';
   }
   return 'Evening';
+}
+
+Location location = new Location();
+late LocationData _locationData;
+
+Future<void> getLocationData() async {
+  _locationData = await location.getLocation();
+
+  if (_locationData.latitude == null || _locationData.longitude == null) {
+    // todo: Handle no location
+  }
+  double? long = _locationData.longitude;
+
+  print(long);
+}
+
+class Weather {
+  final double temp; //현재 온도
+  final int tempMin; //최저 온도
+  final int tempMax; //최고 온도
+  final String weatherMain; //흐림정도
+  final int code; //흐림정도의 id(icon 작업시 필요)
+
+  Weather({
+    required this.temp,
+    required this.tempMin,
+    required this.tempMax,
+    required this.weatherMain,
+    required this.code,
+  });
+}
+
+Future<Weather?> getWeather() async {
+  //api 호출을 위한 주소
+  String apiAddr =
+      "https://api.openweathermap.org/data/2.5/weather?q=seoul&appid=2548a763bdb778e939137dbaa880a353&units=metric";
+  http.Response response; //http request의 결과 즉 api 호출의 결과를 받기 위한 변수
+  var data1; //api 호출을 통해 받은 정보를 json으로 바꾼 결과를 저장한다.
+  Weather? weather;
+  try {
+    response = await http.get(Uri.parse(apiAddr)); //필요 api 호출
+    data1 = json.decode(response.body); //받은 정보를 json형태로 decode
+    //받은 데이터정보를 필요한 형태로 저장한다.
+    weather = Weather(
+        temp: data1["main"]["temp"],
+        tempMax: data1["main"]["temp_max"],
+        tempMin: data1["main"]["temp_min"],
+        weatherMain: data1["weather"][0]
+            ["main"], //weather부분의 경우 리스트로 json에 들어가고 있기 때문에 첫번째것을 쓴다고 표시를 해준다.
+        code: data1["weather"][0]
+            ["id"]); //weather부분의 경우 리스트로 json에 들어가고 있기 때문에 첫번째것을 쓴다고 표시를 해준다.
+  } catch (e) {
+    weather = null;
+    print(e);
+  }
+
+  return weather;
 }
 
 class DashboardPage extends StatefulWidget {
@@ -84,6 +135,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    // getWeather();
     User? currentUser = FirebaseAuth.instance.currentUser;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -105,6 +157,36 @@ class _DashboardPageState extends State<DashboardPage> {
             ],
           ),
         ),
+        FutureBuilder(
+            future: getWeather(), //future작업을 진행할 함수
+            //snapshot은 getWeather()에서 return해주는 타입에 맞추어 사용한다.
+            builder: (context, AsyncSnapshot<Weather?> snapshot) {
+              //데이터가 만약 들어오지 않았을때는 뱅글뱅글 로딩이 뜬다
+              if (snapshot.hasData == false) {
+                return CircularProgressIndicator();
+              }
+              //데이터가 제대로 불러와진 경우 현재온도, 최저,최고 온도와 코드에 따른 아이콘을 표시하는 부분
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text('현재 온도 : ${snapshot.data!.temp.toString()}'),
+                  Text('최저 온도 : ${snapshot.data!.tempMin.toString()}'),
+                  Text('최고 온도 : ${snapshot.data!.tempMax.toString()}'),
+                  //아이콘의 경우 적절한것이 기본적으로 제공이 되지 않고 있다. 제대로된 앱을 위해서는 적절한 이미지를 삽입하는것이 옳은것 같다.
+                  snapshot.data!.code == 800
+                      ? Icon(Icons.wb_sunny)
+                      : snapshot.data!.code / 100 == 8 ||
+                              snapshot.data!.code / 100 == 2
+                          ? Icon(Icons.wb_cloudy)
+                          : snapshot.data!.code / 100 == 3 ||
+                                  snapshot.data!.code / 100 == 5
+                              ? Icon(Icons.beach_access)
+                              : snapshot.data!.code / 100 == 6
+                                  ? Icon(Icons.ac_unit)
+                                  : Icon(Icons.cloud_circle)
+                ],
+              );
+            }),
         SizedBox(height: 23),
         if (greeting() == "Morning")
           Text(
