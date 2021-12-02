@@ -62,9 +62,9 @@ Future<void> getLocationData() async {
 }
 
 class Weather {
-  final double temp; //현재 온도
-  final int tempMin; //최저 온도
-  final int tempMax; //최고 온도
+  final int temp; //현재 온도
+  final double tempMin; //최저 온도
+  final double tempMax; //최고 온도
   final String weatherMain; //흐림정도
   final int code; //흐림정도의 id(icon 작업시 필요)
 
@@ -98,6 +98,7 @@ Future<Weather?> getWeather() async {
             ["id"]); //weather부분의 경우 리스트로 json에 들어가고 있기 때문에 첫번째것을 쓴다고 표시를 해준다.
   } catch (e) {
     weather = null;
+    print("something wrong");
     print(e);
   }
 
