@@ -2,9 +2,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tiot/font.dart';
 
 import 'app.dart';
 import 'auth.dart';
+import 'font_provider.dart';
 import 'page_view_state.dart';
 
 Future<void> main() async {
@@ -12,15 +15,32 @@ Future<void> main() async {
   //  Provider.debugCheckInvalidValueType = null;
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => LoginProvider()),
-        ChangeNotifierProvider(create: (context) => BottomAppBarProvider()),
-      ],
-      builder: (context, _) => const TioT(),
-    ),
-  );
+  SharedPreferences.getInstance().then((pref) {
+    var themeFont = pref.getString("ThemeMode");
+    if (themeFont == "NanumGothic") {
+      activeTheme = nanumGothic;
+    } else if (themeFont == "NanumPenScript") {
+      activeTheme = nanumPenScript;
+    } else if (themeFont == "NotoSansKR") {
+      activeTheme = notoSansKR;
+    } else if (themeFont == "RobotoMono") {
+      activeTheme = robotoMono;
+    } else {
+      activeTheme = raleway;
+    }
+    print("가져온 폰트: " + themeFont!);
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+              create: (context) => ThemeNotifier(activeTheme)),
+          ChangeNotifierProvider(create: (context) => LoginProvider()),
+          ChangeNotifierProvider(create: (context) => BottomAppBarProvider()),
+        ],
+        builder: (context, _) => const TioT(),
+      ),
+    );
+  });
 }
 
 class LoginProvider extends ChangeNotifier {
