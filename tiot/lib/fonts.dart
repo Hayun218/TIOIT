@@ -25,7 +25,6 @@ class FontPage extends StatelessWidget {
     }
     final pref = await SharedPreferences.getInstance();
     pref.setString("ThemeMode", value);
-    print("저장하는 폰트: " + value);
   }
 
   @override

@@ -28,7 +28,6 @@ Future<void> main() async {
     } else {
       activeTheme = raleway;
     }
-    print("가져온 폰트: " + themeFont!);
     runApp(
       MultiProvider(
         providers: [
