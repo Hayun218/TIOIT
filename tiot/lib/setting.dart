@@ -185,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 leading: Icon(Icons.check),
                 onPressed: (context) {
                   final snackBar = SnackBar(
-                    content: Text('Version: 0.14.1'),
+                    content: Text('Version: 0.15.1'),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
