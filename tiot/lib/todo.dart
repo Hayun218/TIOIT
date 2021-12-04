@@ -535,7 +535,6 @@ class _ToDoPageState extends State<ToDoPage> {
                             );
                           }),
                       IconButton(
-
                         icon: Icon(isAdd ? Icons.add : null),
                         onPressed: () async {
                           if (selectedDate.isAfter(
@@ -554,7 +553,6 @@ class _ToDoPageState extends State<ToDoPage> {
                           }
                         },
                       ),
-
                     ],
                   ),
                 ),
@@ -589,7 +587,9 @@ Future saveSta(int comp, int total) {
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('statistic');
 
-  return toDoSta
-      .doc(todayDate)
-      .set({"totalN": total, "completed": comp}).then((value) => print("save"));
+  return toDoSta.doc(todayDate).set({
+    "totalN": total,
+    "completed": comp,
+    "percentage": total != 0 ? ((comp / total) * 100).roundToDouble() : 0
+  }).then((value) => print("save"));
 }

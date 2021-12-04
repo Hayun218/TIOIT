@@ -142,17 +142,6 @@ class _DiaryPageState extends State<DiaryPage> {
     }
   }
 
-  Future<bool> checkExist(String format) async {
-    var doc = await FirebaseFirestore.instance
-        .collection('user')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('diary')
-        .doc(format)
-        .get();
-    if (doc.exists) return true;
-    return false;
-  }
-
   final _picker = ImagePicker();
 
   getFromGallery() async {
