@@ -14,8 +14,9 @@ import 'package:weather/weather.dart';
 import 'package:location/location.dart';
 import 'dart:convert'; //json으로 바꿔주기 위해 필요한 패키지
 import 'package:flutter/material.dart';
-import 'package:http/http.dart'
-    as http; //api 호출을 위해 필요한 패키지(as를 이용하여 해당 패키지의 이름을 설정해준다.)
+import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 
 var today = DateTime.now();
 var format = DateFormat('yyyy년 MM월 d일');
@@ -47,18 +48,34 @@ String greeting() {
   return 'Evening';
 }
 
-Location location = new Location();
-late LocationData _locationData;
+late String lat;
+late String lon;
+Location location = Location();
+late bool _serviceEnabled;
+late PermissionStatus _permissionGranted;
 
-Future<void> getLocationData() async {
-  _locationData = await location.getLocation();
-
-  if (_locationData.latitude == null || _locationData.longitude == null) {
-    // todo: Handle no location
+Future<void> _locateMe() async {
+  _serviceEnabled = await location.serviceEnabled();
+  if (!_serviceEnabled) {
+    _serviceEnabled = await location.requestService();
+    if (!_serviceEnabled) {
+      print("no service");
+      return;
+    }
   }
-  double? long = _locationData.longitude;
 
-  print(long);
+  _permissionGranted = await location.hasPermission();
+  if (_permissionGranted == PermissionStatus.denied) {
+    _permissionGranted = await location.requestPermission();
+    if (_permissionGranted != PermissionStatus.granted) {
+      return;
+    }
+  }
+  var currentPosition = await Geolocator.getCurrentPosition();
+  var lastPosition = await Geolocator.getLastKnownPosition();
+
+  lat = currentPosition.latitude.toString();
+  lon = currentPosition.longitude.toString();
 }
 
 class Weather {
@@ -79,8 +96,11 @@ class Weather {
 
 Future<Weather?> getWeather() async {
   //api 호출을 위한 주소
+  if (lat == "" || lon == "") {
+    CircularProgressIndicator();
+  }
   String apiAddr =
-      "https://api.openweathermap.org/data/2.5/weather?q=seoul&appid=2548a763bdb778e939137dbaa880a353&units=metric";
+      "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=2548a763bdb778e939137dbaa880a353&units=metric";
   http.Response response; //http request의 결과 즉 api 호출의 결과를 받기 위한 변수
   var data1; //api 호출을 통해 받은 정보를 json으로 바꾼 결과를 저장한다.
   Weather? weather;
@@ -136,7 +156,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    // getWeather();
+    _locateMe();
+
+    //_determinePosition();
     User? currentUser = FirebaseAuth.instance.currentUser;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
