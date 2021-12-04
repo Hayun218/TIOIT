@@ -84,7 +84,7 @@ class _HighlightPageState extends State<HighlightPage> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        systemNavigationBarColor: Colors.blue,
+        systemNavigationBarColor: Colors.lightBlueAccent,
         statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
       ),
