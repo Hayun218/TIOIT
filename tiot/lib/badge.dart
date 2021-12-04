@@ -13,6 +13,8 @@ class BadgedPage extends StatefulWidget {
   State<BadgedPage> createState() => _BadgedPageState();
 }
 
+bool isChecked = false;
+
 class _BadgedPageState extends State<BadgedPage> {
   @override
   Widget build(BuildContext context) {
@@ -49,29 +51,29 @@ class _BadgedPageState extends State<BadgedPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
           Expanded(
-            child: Container(
-              child: GridView.count(
-                crossAxisCount: 3,
-                childAspectRatio: 9 / 10,
-                children: List.generate(12, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Text("21년 ${index + 1}월"),
-                        SizedBox(height: 10),
-                        Image.asset(
-                          "assets/checked_badge.png",
-                          height: 80,
-                          width: 80,
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
+            child: GridView.count(
+              crossAxisCount: 3,
+              childAspectRatio: 9 / 10,
+              children: List.generate(12, (index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text("21년 ${index + 1}월"),
+                      const SizedBox(height: 10),
+                      Image.asset(
+                        isChecked
+                            ? "assets/checked_badge.png"
+                            : "assets/unchecked_badge.png",
+                        height: 80,
+                        width: 80,
+                      ),
+                    ],
+                  ),
+                );
+              }),
             ),
           )
         ],

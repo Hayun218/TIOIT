@@ -210,7 +210,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ],
               );
             }),
-        SizedBox(height: 23),
+        const SizedBox(height: 23),
         if (greeting() == "Morning")
           Text(
             (morning.toList()..shuffle()).first,
@@ -480,12 +480,15 @@ class _LineChartSample2State extends State<LineChartSample2> {
   double findPer(documents, int index) {
     double comp = 0;
     double total = 0;
+    double result = 0;
     for (var document in documents) {
       if (document.id == days[index]) {
         comp = document.data()["completed"].toDouble();
         total = document.data()["totalN"].toDouble();
         if (total == 0) return 0;
-        return ((comp / total) * 100).roundToDouble();
+        result = ((comp / total) * 100).roundToDouble();
+
+        return result;
       }
     }
     return 0;
