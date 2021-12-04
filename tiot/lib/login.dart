@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        systemNavigationBarColor: Colors.blue,
+        systemNavigationBarColor: Colors.lightBlueAccent,
         statusBarColor: Color(0xffcbe5f4),
         statusBarIconBrightness: Brightness.dark,
       ),
