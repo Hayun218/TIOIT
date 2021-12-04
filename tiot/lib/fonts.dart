@@ -121,7 +121,7 @@ class _FontPageState extends State<FontPage> {
             ),
             ListTile(
               title: Text(
-                inputText == "" ? "NnumGothic" : inputText,
+                inputText == "" ? "NanumGothic" : inputText,
                 style: TextStyle(fontFamily: 'NanumGothic'),
               ),
               onTap: () {
