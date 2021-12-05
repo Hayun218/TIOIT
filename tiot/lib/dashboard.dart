@@ -160,134 +160,140 @@ class _DashboardPageState extends State<DashboardPage> {
 
     //_determinePosition();
     User? currentUser = FirebaseAuth.instance.currentUser;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return ListView(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(
-                "Hello, " + currentUser!.displayName.toString(),
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: NetworkImage(currentUser.photoURL.toString()),
-              ),
-            ],
-          ),
-        ),
-        FutureBuilder(
-            future: getWeather(), //future작업을 진행할 함수
-            //snapshot은 getWeather()에서 return해주는 타입에 맞추어 사용한다.
-            builder: (context, AsyncSnapshot<Weather?> snapshot) {
-              //데이터가 만약 들어오지 않았을때는 뱅글뱅글 로딩이 뜬다
-              if (snapshot.hasData == false) {
-                return CircularProgressIndicator();
-              }
-              //데이터가 제대로 불러와진 경우 현재온도, 최저,최고 온도와 코드에 따른 아이콘을 표시하는 부분
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text('현재 온도 : ${snapshot.data!.temp.toString()}'),
-                  Text('최저 온도 : ${snapshot.data!.tempMin.toString()}'),
-                  Text('최고 온도 : ${snapshot.data!.tempMax.toString()}'),
-                  //아이콘의 경우 적절한것이 기본적으로 제공이 되지 않고 있다. 제대로된 앱을 위해서는 적절한 이미지를 삽입하는것이 옳은것 같다.
-                  snapshot.data!.code == 800
-                      ? Icon(Icons.wb_sunny)
-                      : snapshot.data!.code / 100 == 8 ||
-                              snapshot.data!.code / 100 == 2
-                          ? Icon(Icons.wb_cloudy)
-                          : snapshot.data!.code / 100 == 3 ||
-                                  snapshot.data!.code / 100 == 5
-                              ? Icon(Icons.beach_access)
-                              : snapshot.data!.code / 100 == 6
-                                  ? Icon(Icons.ac_unit)
-                                  : Icon(Icons.cloud_circle)
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    "Hello, " + currentUser!.displayName.toString(),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage:
+                        NetworkImage(currentUser.photoURL.toString()),
+                  ),
                 ],
-              );
-            }),
-        const SizedBox(height: 23),
-        if (greeting() == "Morning")
-          Text(
-            (morning.toList()..shuffle()).first,
-            style: TextStyle(fontSize: 15),
-          ),
-        if (greeting() == "Afternoon")
-          Text(
-            (afternoon.toList()..shuffle()).first,
-            style: TextStyle(fontSize: 15),
-          ),
-        if (greeting() == "Evening")
-          Text(
-            (goodWords.toList()..shuffle()).first,
-            style: TextStyle(fontSize: 15),
-          ),
-        SizedBox(height: 40),
-        Center(
-          child: Text(
-            todayDate,
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+              ),
             ),
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.all(20),
-          child: Center(
-            child: LineChartSample2(),
-          ),
-        ),
-        Divider(),
-        Center(
-          child: Container(
-            width: 280,
-            child: StreamBuilder(
-              stream: toDoList,
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
-                if (!snapshot.hasData) return LoadingFlipping.circle();
+            FutureBuilder(
+                future: getWeather(), //future작업을 진행할 함수
+                //snapshot은 getWeather()에서 return해주는 타입에 맞추어 사용한다.
+                builder: (context, AsyncSnapshot<Weather?> snapshot) {
+                  //데이터가 만약 들어오지 않았을때는 뱅글뱅글 로딩이 뜬다
+                  if (snapshot.hasData == false) {
+                    return CircularProgressIndicator();
+                  }
+                  //데이터가 제대로 불러와진 경우 현재온도, 최저,최고 온도와 코드에 따른 아이콘을 표시하는 부분
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text('현재 온도 : ${snapshot.data!.temp.toString()}'),
+                      Text('최저 온도 : ${snapshot.data!.tempMin.toString()}'),
+                      Text('최고 온도 : ${snapshot.data!.tempMax.toString()}'),
+                      //아이콘의 경우 적절한것이 기본적으로 제공이 되지 않고 있다. 제대로된 앱을 위해서는 적절한 이미지를 삽입하는것이 옳은것 같다.
+                      snapshot.data!.code == 800
+                          ? Icon(Icons.wb_sunny)
+                          : snapshot.data!.code / 100 == 8 ||
+                                  snapshot.data!.code / 100 == 2
+                              ? Icon(Icons.wb_cloudy)
+                              : snapshot.data!.code / 100 == 3 ||
+                                      snapshot.data!.code / 100 == 5
+                                  ? Icon(Icons.beach_access)
+                                  : snapshot.data!.code / 100 == 6
+                                      ? Icon(Icons.ac_unit)
+                                      : Icon(Icons.cloud_circle)
+                    ],
+                  );
+                }),
+            const SizedBox(height: 10),
+            if (greeting() == "Morning")
+              Text(
+                (morning.toList()..shuffle()).first,
+                style: TextStyle(fontSize: 15),
+              ),
+            if (greeting() == "Afternoon")
+              Text(
+                (afternoon.toList()..shuffle()).first,
+                style: TextStyle(fontSize: 15),
+              ),
+            if (greeting() == "Evening")
+              Text(
+                (goodWords.toList()..shuffle()).first,
+                style: TextStyle(fontSize: 15),
+              ),
+            SizedBox(height: 10),
+            Center(
+              child: Text(
+                todayDate,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.all(20),
+              child: Center(
+                child: LineChartSample2(),
+              ),
+            ),
+            Divider(),
+            Center(
+              child: Container(
+                width: 280,
+                child: StreamBuilder(
+                  stream: toDoList,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+                    if (!snapshot.hasData) return LoadingFlipping.circle();
 
-                return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: snapshot.data.docs.length,
-                  itemBuilder: (context, index) {
-                    DocumentSnapshot data = snapshot.data.docs[index];
+                    return ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.docs.length,
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot data = snapshot.data.docs[index];
 
-                    return Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                        return Column(
                           children: [
-                            IconButton(
-                              icon: selectIcon(data),
-                              onPressed: () => null,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                IconButton(
+                                  icon: selectIcon(data),
+                                  onPressed: () => null,
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    data['content'],
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.black),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Expanded(
-                              child: Text(
-                                data['content'],
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.black),
-                              ),
-                            ),
+                            Divider(height: 10, thickness: 1),
                           ],
-                        ),
-                        Divider(height: 10, thickness: 1),
-                      ],
+                        );
+                      },
                     );
                   },
-                );
-              },
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ],
     );

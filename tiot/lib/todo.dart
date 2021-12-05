@@ -418,7 +418,7 @@ class _ToDoPageState extends State<ToDoPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                margin: EdgeInsets.fromLTRB(0, 80, 0, 0),
+                margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                 child: Column(
                   children: [
                     Container(

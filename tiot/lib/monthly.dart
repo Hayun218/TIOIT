@@ -65,7 +65,7 @@ class _MonthlypageState extends State<MonthlyPage> {
                 // height between the day row and 1st date row, default is 16.0
                 daysOfWeekHeight: 40.0,
                 // height between the date rows, default is 52.0
-                rowHeight: 60.0,
+                rowHeight: 40.0,
                 // this property needs to be added if we want to show events
 //              eventLoader: _listOfDayEvents,
                 // Calendar Header Styling
@@ -133,6 +133,12 @@ class _MonthlypageState extends State<MonthlyPage> {
                           .split('-')
                     ];
                     queryDates = [date[0][0], date[0][1], date[0][2]];
+                    if (queryDates[1].toString().substring(0, 1) == "0") {
+                      queryDates[1] = queryDates[1].toString().substring(1, 2);
+                    }
+                    if (queryDates[2].toString().substring(0, 1) == "0") {
+                      queryDates[2] = queryDates[2].toString().substring(1, 2);
+                    }
                     print(selectedCalendarDate);
                     print(queryDates);
                     queryDateString = queryDates[0] +
