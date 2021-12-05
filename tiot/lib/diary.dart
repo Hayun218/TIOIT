@@ -209,8 +209,8 @@ class _DiaryPageState extends State<DiaryPage> {
               ),
             ),
             Container(
-              width: 250,
-              height: 280,
+              width: 200,
+              height: 200,
               child: _image == null
                   ? Image.network(
                       'http://handong.edu/site/handong/res/img/logo.png',
