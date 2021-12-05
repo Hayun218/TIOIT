@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
+import 'package:geocoder/geocoder.dart';
 
 var today = DateTime.now();
 var format = DateFormat('yyyy년 MM월 d일');
@@ -71,8 +73,16 @@ Future<void> _locateMe() async {
       return;
     }
   }
+
   var currentPosition = await Geolocator.getCurrentPosition();
-  var lastPosition = await Geolocator.getLastKnownPosition();
+  final coordinates =
+      Coordinates(currentPosition.latitude, currentPosition.longitude);
+
+  var addresses =
+      await Geocoder.local.findAddressesFromCoordinates(coordinates);
+  var first = addresses.first;
+  print(
+      ' ${first.locality}, ${first.adminArea},${first.subLocality}, ${first.subAdminArea},${first.addressLine}, ${first.featureName},${first.thoroughfare}, ${first.subThoroughfare}');
 
   lat = currentPosition.latitude.toString();
   lon = currentPosition.longitude.toString();

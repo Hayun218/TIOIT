@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'setting.dart';
 
 var today = DateTime.now();
@@ -14,6 +17,15 @@ class BadgedPage extends StatefulWidget {
 }
 
 bool isChecked = false;
+
+initStream(String month) {
+  return FirebaseFirestore.instance
+      .collection('user')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('statistic')
+      .where('date', isEqualTo: month)
+      .snapshots();
+}
 
 class _BadgedPageState extends State<BadgedPage> {
   @override
@@ -57,18 +69,48 @@ class _BadgedPageState extends State<BadgedPage> {
               crossAxisCount: 3,
               childAspectRatio: 9 / 10,
               children: List.generate(12, (index) {
+                String thisM = DateFormat('yy년').format(DateTime.now());
+                String month = "$thisM ${index + 1}월";
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      Text("21년 ${index + 1}월"),
+                      Text(month),
                       const SizedBox(height: 10),
-                      Image.asset(
-                        isChecked
-                            ? "assets/checked_badge.png"
-                            : "assets/unchecked_badge.png",
-                        height: 80,
-                        width: 80,
+                      StreamBuilder(
+                        stream: initStream("20" + month),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          }
+                          if (!snapshot.hasData) {
+                            return LoadingFlipping.circle();
+                          }
+                          double totalP = 0;
+                          int docN = snapshot.data.docs.length;
+
+                          if (docN == 0) {
+                            isChecked = false;
+                          } else {
+                            for (int i = 0; i < docN - 1; i++) {
+                              totalP += snapshot.data.docs[i]!['percentage'];
+                            }
+                            if ((totalP / docN) >= 30) {
+                              isChecked = true;
+                            } else {
+                              isChecked = false;
+                            }
+                            print((totalP / docN));
+                          }
+                          return Image.asset(
+                            isChecked
+                                ? "assets/checked_badge.png"
+                                : "assets/unchecked_badge.png",
+                            height: 80,
+                            width: 80,
+                          );
+                        },
                       ),
                     ],
                   ),
