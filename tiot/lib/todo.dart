@@ -13,7 +13,7 @@ import 'dart:async';
 
 import 'push_notifications.dart';
 
-final PushNotifications pushNoti = new PushNotifications();
+final PushNotifications pushNoti = PushNotifications();
 
 User? currentUser = FirebaseAuth.instance.currentUser;
 

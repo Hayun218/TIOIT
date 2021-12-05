@@ -26,6 +26,12 @@ DateTime selectedDate = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(selectedDate);
 String displayDate = DateFormat('MM월 d일').format(selectedDate);
 
+class SetDate {
+  void setDate(DateTime selectedDay) {
+    displayDate = DateFormat('MM월 d일').format(selectedDay);
+  }
+}
+
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
 

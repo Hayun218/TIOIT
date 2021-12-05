@@ -22,6 +22,12 @@ final controller = PageController(
 );
 int pageChanged = 0;
 
+class PageControll {
+  void pageController(int pageNum) {
+    controller.jumpToPage(pageNum);
+  }
+}
+
 class HighlightPage extends StatefulWidget {
   // ignore: use_key_in_widget_constructors
   const HighlightPage({
