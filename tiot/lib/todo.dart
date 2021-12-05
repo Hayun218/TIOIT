@@ -588,6 +588,7 @@ Future saveSta(int comp, int total) {
       .collection('statistic');
 
   return toDoSta.doc(todayDate).set({
+    "date": todayDate.split(" ")[0] + " " + todayDate.split(" ")[1],
     "totalN": total,
     "completed": comp,
     "percentage": total != 0 ? ((comp / total) * 100).roundToDouble() : 0
