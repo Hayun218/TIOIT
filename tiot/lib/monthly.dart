@@ -5,6 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'dashboard.dart';
+import 'diary.dart';
+import 'page_view_state.dart';
+
+final PageControll controller = PageControll();
+final SetDate date = SetDate();
 
 class MonthlyPage extends StatefulWidget {
   const MonthlyPage({Key? key}) : super(key: key);
@@ -148,6 +153,9 @@ class _MonthlypageState extends State<MonthlyPage> {
                         queryDates[2] +
                         '일';
                     print(queryDateString);
+                  } else {
+                    date.setDate(selectedDay);
+                    controller.pageController(2);
                   }
                 },
               ),
