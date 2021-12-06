@@ -20,7 +20,7 @@ class _FontPageState extends State<FontPage> {
   String _selectedFont = "";
   String inputText = "";
 
-  void onThemeChange(String value, ThemeNotifier? themeNotifier) async {
+  void onThemeChange(String value, ThemeProvider? themeNotifier) async {
     if (value == "NanumGothic") {
       themeNotifier = themeNotifier!.setTheme(nanumGothic);
     } else if (value == "NanumPenScript") {
@@ -38,7 +38,7 @@ class _FontPageState extends State<FontPage> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeProvider>(context);
     themeNotifier.getTheme;
     return Scaffold(
       backgroundColor: Colors.white,
