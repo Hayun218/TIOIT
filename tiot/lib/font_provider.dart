@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 //https://www.youtube.com/watch?v=wbHYho6zoyE
 
-class ThemeNotifier extends ChangeNotifier {
+class ThemeProvider extends ChangeNotifier {
   ThemeData _themeData = ThemeData();
-  ThemeNotifier(this._themeData);
+  ThemeProvider(this._themeData);
 
   ThemeData get getTheme => _themeData;
 
