@@ -94,7 +94,7 @@ class _DiaryPageState extends State<DiaryPage> {
     thanks.add(one.text);
     thanks.add(two.text);
     thanks.add(three.text);
-    print(uid);
+
     try {
       _image ??=
           await urlToFile('https://handong.edu/site/handong/res/img/logo.png');
@@ -301,9 +301,6 @@ class _DiaryPageState extends State<DiaryPage> {
                             onPressed: () {
                               saveThanks(_thanks1, _thanks2, _thanks3,
                                   FirebaseAuth.instance.currentUser!.uid);
-                              _thanks1.clear();
-                              _thanks2.clear();
-                              _thanks3.clear();
                             },
                             child: Text("저장")),
                       ],
