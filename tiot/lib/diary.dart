@@ -94,7 +94,7 @@ class _DiaryPageState extends State<DiaryPage> {
     thanks.add(one.text);
     thanks.add(two.text);
     thanks.add(three.text);
-    print(uid);
+
     try {
       _image ??=
           await urlToFile('https://handong.edu/site/handong/res/img/logo.png');
@@ -302,6 +302,7 @@ class _DiaryPageState extends State<DiaryPage> {
                             maxLines: 1,
                             minLines: 1,
                           ),
+
                           TextButton(
                               onPressed: () {
                                 saveThanks(_thanks1, _thanks2, _thanks3,
