@@ -32,7 +32,7 @@ Future<void> main() async {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(
-              create: (context) => ThemeNotifier(activeTheme)),
+              create: (context) => ThemeProvider(activeTheme)),
           ChangeNotifierProvider(create: (context) => LoginProvider()),
           ChangeNotifierProvider(create: (context) => BottomAppBarProvider()),
         ],

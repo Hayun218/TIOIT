@@ -73,6 +73,7 @@ class _MonthlypageState extends State<MonthlyPage> {
                 rowHeight: 40.0,
                 // this property needs to be added if we want to show events
 //              eventLoader: _listOfDayEvents,
+
                 // Calendar Header Styling
                 headerStyle: const HeaderStyle(
                   formatButtonVisible: false,

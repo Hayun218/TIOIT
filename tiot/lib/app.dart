@@ -9,7 +9,7 @@ class TioT extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeProvider>(context);
     return MaterialApp(
       theme: themeNotifier.getTheme,
       debugShowCheckedModeBanner: false,
