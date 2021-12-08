@@ -73,7 +73,7 @@ class PushNotifications {
       await flutterLocalNotificationsPlugin.zonedSchedule(
           id,
           'reminder',
-          '[' + content + '] will begin in 10 minutes.' + id.toString(),
+          '[' + content + '] will begin in 10 minutes.',
           tz.TZDateTime.now(tz.local).add(Duration(minutes: difference - 10)),
           const NotificationDetails(
               android: AndroidNotificationDetails(
@@ -96,7 +96,7 @@ class PushNotifications {
       await flutterLocalNotificationsPlugin.zonedSchedule(
           id,
           "reminder",
-          '[' + content + '] will begin in 10 minutes.' + id.toString(),
+          '[' + content + '] will begin in 10 minutes.',
           tz.TZDateTime.now(tz.local).add(Duration(minutes: difference - 10)),
           const NotificationDetails(
               android: AndroidNotificationDetails(
@@ -120,6 +120,6 @@ class PushNotifications {
 //        androidAllowWhileIdle: true,
 //        uiLocalNotificationDateInterpretation:
 //            UILocalNotificationDateInterpretation.absoluteTime);
-    await flutterLocalNotificationsPlugin.cancel(1);
+    await flutterLocalNotificationsPlugin.cancel(id);
   }
 }
