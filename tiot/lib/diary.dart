@@ -157,7 +157,7 @@ class _DiaryPageState extends State<DiaryPage> {
     }
   }
 
-  Stream diary = FirebaseFirestore.instance
+  Stream<DocumentSnapshot> diary = FirebaseFirestore.instance
       .collection('user')
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('diary')
@@ -186,13 +186,6 @@ class _DiaryPageState extends State<DiaryPage> {
                         lastDate: DateTime.now(),
                       );
 
-                      diary = FirebaseFirestore.instance
-                          .collection('user')
-                          .doc(FirebaseAuth.instance.currentUser!.uid)
-                          .collection('diary')
-                          .doc(todayDate)
-                          .snapshots();
-
                       if (picked != null && picked != selectedDate) {
                         setState(() {
                           selectedDate = picked;
@@ -204,6 +197,12 @@ class _DiaryPageState extends State<DiaryPage> {
                               DateFormat('MM월 d일').format(selectedDate);
                         });
                       }
+                      diary = FirebaseFirestore.instance
+                          .collection('user')
+                          .doc(FirebaseAuth.instance.currentUser!.uid)
+                          .collection('diary')
+                          .doc(todayDate)
+                          .snapshots();
                     },
                     icon: Icon(Icons.calendar_today)),
               ),
@@ -219,40 +218,24 @@ class _DiaryPageState extends State<DiaryPage> {
                 ),
               ),
               SizedBox(height: 30),
-              Container(
-                width: 240,
-                height: 280,
-                child: _image == null
-                    ? Image.network(
-                        'https://firebasestorage.googleapis.com/v0/b/tiot-2f18b.appspot.com/o/post%2Fdefault.png?alt=media&token=55b7f376-6072-4f57-858d-37616c31cffa',
-                        fit: BoxFit.fill,
-                      )
-                    : Image.file(_image!),
-              ),
-              Container(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                    onPressed: () {
-                      // toDo: lost connection error..
-                      pickImage();
-                    },
-                    icon: Icon(Icons.camera)),
-              ),
-              StreamBuilder(
-                  stream: diary,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
-                    if (!snapshot.hasData) {
-                      addDiary(FirebaseAuth.instance.currentUser!.uid);
+              StreamBuilder<DocumentSnapshot>(
+                stream: diary,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  DocumentSnapshot updatedPost;
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+                  if (!snapshot.hasData) {
+                    addDiary(FirebaseAuth.instance.currentUser!.uid);
 
-                      return LoadingFlipping.circle();
-                    }
-
+                    return LoadingFlipping.circle();
+                  } else {
+                    updatedPost = snapshot.data!;
                     List<String> data =
-                        List<String>.from(snapshot.data['thanks']);
+                        List<String>.from(snapshot.data!['thanks']);
+                    print("hello");
+                    print(snapshot.data!['photoUrl']);
 
                     TextEditingController _thanks1 = TextEditingController();
                     TextEditingController _thanks2 = TextEditingController();
@@ -260,21 +243,42 @@ class _DiaryPageState extends State<DiaryPage> {
 
                     if (data.isNotEmpty && data[0].isNotEmpty) {
                       _thanks1 = TextEditingController(
-                          text: snapshot.data['thanks'][0]);
+                          text: snapshot.data!['thanks'][0]);
                     }
                     if (data.isNotEmpty && data[1].isNotEmpty) {
                       _thanks2 = TextEditingController(
-                          text: snapshot.data['thanks'][1]);
+                          text: snapshot.data!['thanks'][1]);
                     }
                     if (data.isNotEmpty && data[2].isNotEmpty) {
                       _thanks3 = TextEditingController(
-                          text: snapshot.data['thanks'][2]);
+                          text: snapshot.data!['thanks'][2]);
                     }
-
                     return Container(
                       margin: EdgeInsets.fromLTRB(40, 0, 40, 0),
                       child: Column(
                         children: [
+                          Container(
+                            width: 240,
+                            height: 280,
+                            child: updatedPost['photoUrl'] == ""
+                                ? Image.network(
+                                    'https://firebasestorage.googleapis.com/v0/b/tiot-2f18b.appspot.com/o/post%2Fdefault.png?alt=media&token=55b7f376-6072-4f57-858d-37616c31cffa',
+                                    fit: BoxFit.fill,
+                                  )
+                                : Image.network(
+                                    updatedPost['photoUrl'],
+                                    fit: BoxFit.fill,
+                                  ),
+                          ),
+                          Container(
+                            alignment: Alignment.topRight,
+                            child: IconButton(
+                                onPressed: () {
+                                  // toDo: lost connection error..
+                                  pickImage();
+                                },
+                                icon: Icon(Icons.camera)),
+                          ),
                           TextField(
                             decoration: InputDecoration(
                               labelText: '1st Thanks',
@@ -313,7 +317,9 @@ class _DiaryPageState extends State<DiaryPage> {
                         ],
                       ),
                     );
-                  }),
+                  }
+                },
+              ),
             ],
           ),
           Align(

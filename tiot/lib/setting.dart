@@ -230,7 +230,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 leading: Icon(Icons.check),
                 onPressed: (context) {
                   final snackBar = SnackBar(
-                    content: Text('Version: 1.0.1'),
+                    content: Text('Version: 1.0.0'),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
