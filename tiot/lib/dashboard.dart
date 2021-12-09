@@ -50,6 +50,7 @@ String greeting() {
 }
 
 late String cityName;
+late String lon, lat;
 loc.Location location = loc.Location();
 late bool _serviceEnabled;
 late PermissionStatus _permissionGranted;
@@ -79,6 +80,9 @@ Future<void> _locateMe() async {
   Placemark placeMark = placemarks[0];
 
   cityName = placeMark.locality!;
+  lat = currentPosition.latitude.toString();
+  lon = currentPosition.longitude.toString();
+  print(cityName);
 }
 
 class Weather {
@@ -99,14 +103,14 @@ class Weather {
 
 Future<Weather?> getWeather() async {
   //api 호출을 위한 주소
-  if (cityName == "") {
+  if (lon == "" || lat == "") {
     CircularProgressIndicator();
   }
-  // String apiAddr =
-  //     "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=2548a763bdb778e939137dbaa880a353&units=metric";
   String apiAddr =
-      "https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=2548a763bdb778e939137dbaa880a353&units=metric";
-  http.Response response; //http request의 결과 즉 api 호출의 결과를 받기 위한 변수
+      "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=2548a763bdb778e939137dbaa880a353&units=metric";
+  // String apiAddr =
+  //     "https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=2548a763bdb778e939137dbaa880a353&units=metric";
+  http.Response response; //http request의 결과 즉 api 호출의 결과를 받기 위한변수
   var data1; //api 호출을 통해 받은 정보를 json으로 바꾼 결과를 저장한다.
   Weather? weather;
   try {
