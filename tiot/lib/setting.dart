@@ -126,7 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             tiles: [
               SettingsTile(
                 title: 'Language',
-                subtitle: 'English',
+                subtitle: 'Korean',
                 leading: Icon(Icons.language),
                 onPressed: (context) {
                   Navigator.of(context).push(MaterialPageRoute(
