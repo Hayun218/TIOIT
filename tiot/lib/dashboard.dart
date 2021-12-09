@@ -196,30 +196,35 @@ class _DashboardPageState extends State<DashboardPage> {
                   if (snapshot.hasData == false) {
                     return CircularProgressIndicator();
                   }
-                  //데이터가 제대로 불러와진 경우 현재온도, 최저,최고 온도와 코드에 따른 아이콘을 표시하는 부분
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text("현재 위치 : $cityName"),
-                      Text('현재 온도 : ${snapshot.data!.temp.toString()}'),
-                      Text('최저 온도 : ${snapshot.data!.tempMin.toString()}'),
-                      Text('최고 온도 : ${snapshot.data!.tempMax.toString()}'),
-                      //아이콘의 경우 적절한것이 기본적으로 제공이 되지 않고 있다. 제대로된 앱을 위해서는 적절한 이미지를 삽입하는것이 옳은것 같다.
-                      snapshot.data!.code == 800
-                          ? Icon(Icons.wb_sunny)
-                          : snapshot.data!.code / 100 == 8 ||
-                                  snapshot.data!.code / 100 == 2
-                              ? Icon(Icons.wb_cloudy)
-                              : snapshot.data!.code / 100 == 3 ||
-                                      snapshot.data!.code / 100 == 5
-                                  ? Icon(Icons.beach_access)
-                                  : snapshot.data!.code / 100 == 6
-                                      ? Icon(Icons.ac_unit)
-                                      : Icon(Icons.cloud_circle)
-                    ],
+
+                  return Container(
+                    margin: EdgeInsets.fromLTRB(50, 20, 0, 20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text("현재 위치 : $cityName"),
+                        Row(
+                          children: [
+                            Text('현재 온도 : ${snapshot.data!.temp.toString()}'),
+                            SizedBox(height: 30, width: 20),
+                            snapshot.data!.code == 800
+                                ? Icon(Icons.wb_sunny)
+                                : snapshot.data!.code / 100 == 8 ||
+                                        snapshot.data!.code / 100 == 2
+                                    ? Icon(Icons.wb_cloudy)
+                                    : snapshot.data!.code / 100 == 3 ||
+                                            snapshot.data!.code / 100 == 5
+                                        ? Icon(Icons.beach_access)
+                                        : snapshot.data!.code / 100 == 6
+                                            ? Icon(Icons.ac_unit)
+                                            : Icon(Icons.cloud_circle),
+                          ],
+                        )
+                      ],
+                    ),
                   );
                 }),
-            const SizedBox(height: 10),
             if (greeting() == "Morning")
               Text(
                 (morning.toList()..shuffle()).first,
@@ -235,7 +240,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 (goodWords.toList()..shuffle()).first,
                 style: TextStyle(fontSize: 15),
               ),
-            SizedBox(height: 10),
+            SizedBox(height: 30),
             Center(
               child: Text(
                 todayDate,

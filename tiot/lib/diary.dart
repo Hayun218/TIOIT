@@ -218,13 +218,14 @@ class _DiaryPageState extends State<DiaryPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 30),
               Container(
-                width: 200,
-                height: 200,
+                width: 240,
+                height: 280,
                 child: _image == null
                     ? Image.network(
-                        'http://handong.edu/site/handong/res/img/logo.png',
-                        fit: BoxFit.contain,
+                        'https://firebasestorage.googleapis.com/v0/b/tiot-2f18b.appspot.com/o/post%2Fdefault.png?alt=media&token=55b7f376-6072-4f57-858d-37616c31cffa',
+                        fit: BoxFit.fill,
                       )
                     : Image.file(_image!),
               ),
@@ -301,7 +302,6 @@ class _DiaryPageState extends State<DiaryPage> {
                             maxLines: 1,
                             minLines: 1,
                           ),
-
                           TextButton(
                               onPressed: () {
                                 saveThanks(_thanks1, _thanks2, _thanks3,
