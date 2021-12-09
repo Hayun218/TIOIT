@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,6 +21,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
   bool lockInBackground = true;
   bool notificationsEnabled = true;
+
+  void flutterDialog() {
+    showDialog(
+      context: context,
+      //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          //Dialog Main Title
+          title: Column(
+            children: <Widget>[
+              new Text("앱을 재시작합니다."),
+            ],
+          ),
+          //
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                "재시작하려면 확인버튼을 누르세요",
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("확인"),
+              onPressed: () {
+                Restart.restartApp();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,11 +221,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onToggle: (value) {},
               ),
               SettingsTile(
+                title: 'Restart App',
+                leading: Icon(Icons.restart_alt),
+                onPressed: (context) => flutterDialog(),
+              ),
+              SettingsTile(
                 title: 'Version',
                 leading: Icon(Icons.check),
                 onPressed: (context) {
                   final snackBar = SnackBar(
-                    content: Text('Version: 0.17.1'),
+                    content: Text('Version: 1.0.1'),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
