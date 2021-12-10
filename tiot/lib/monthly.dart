@@ -145,15 +145,15 @@ class _MonthlypageState extends State<MonthlyPage> {
                     if (queryDates[2].toString().substring(0, 1) == "0") {
                       queryDates[2] = queryDates[2].toString().substring(1, 2);
                     }
-                    print(selectedCalendarDate);
-                    print(queryDates);
+//                    print(selectedCalendarDate);
+//                    print(queryDates);
                     queryDateString = queryDates[0] +
                         '년 ' +
                         queryDates[1] +
                         '월 ' +
                         queryDates[2] +
                         '일';
-                    print(queryDateString);
+//                    print(queryDateString);
                   } else {
                     date.setDate(selectedDay);
                     controller.pageController(2);

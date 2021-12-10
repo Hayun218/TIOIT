@@ -48,7 +48,7 @@ Future<void> initialize() async {
   tz.initializeTimeZones();
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('ic_launcher');
-  final InitializationSettings initializationSettings =
+  const InitializationSettings initializationSettings =
       InitializationSettings(android: initializationSettingsAndroid);
 
   // 알림 초기화
@@ -69,15 +69,33 @@ class PushNotifications {
     final today = DateTime.now();
     final difference = alert.difference(today).inMinutes + 1;
     initialize();
+
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+            'your channel id', 'your channel name', 'your channel description',
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker');
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+//    await flutterLocalNotificationsPlugin.zonedSchedule(
+//        id,
+//        'reminder',
+//        '[' + content + '] will begin in 10 minutes.',
+//        tz.TZDateTime.now(tz.local).add(Duration(seconds: 5)),
+//        platformChannelSpecifics,
+//        androidAllowWhileIdle: true,
+//        uiLocalNotificationDateInterpretation:
+//            UILocalNotificationDateInterpretation.absoluteTime);
+
     if (difference >= 10) {
       await flutterLocalNotificationsPlugin.zonedSchedule(
           id,
           'reminder',
           '[' + content + '] will begin in 10 minutes.',
           tz.TZDateTime.now(tz.local).add(Duration(minutes: difference - 10)),
-          const NotificationDetails(
-              android: AndroidNotificationDetails(
-                  ChannelId, ChannelName, ChannelDescription)),
+          platformChannelSpecifics,
           androidAllowWhileIdle: true,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime);
@@ -92,15 +110,21 @@ class PushNotifications {
     final today = DateTime.now();
     final difference = alert.difference(today).inMinutes + 1;
     initialize();
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+            'your channel id', 'your channel name', 'your channel description',
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker');
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
     if (difference >= 10) {
       await flutterLocalNotificationsPlugin.zonedSchedule(
           id,
-          "reminder",
+          'reminder',
           '[' + content + '] will begin in 10 minutes.',
           tz.TZDateTime.now(tz.local).add(Duration(minutes: difference - 10)),
-          const NotificationDetails(
-              android: AndroidNotificationDetails(
-                  ChannelId, ChannelName, ChannelDescription)),
+          platformChannelSpecifics,
           androidAllowWhileIdle: true,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime);

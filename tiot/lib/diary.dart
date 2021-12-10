@@ -24,10 +24,23 @@ import 'package:tiot/long_diary.dart';
 DateTime selectedDate = DateTime.now();
 String todayDate = DateFormat('yyyy년 MM월 d일').format(selectedDate);
 String displayDate = DateFormat('MM월 d일').format(selectedDate);
+Stream<DocumentSnapshot> diary = FirebaseFirestore.instance
+    .collection('user')
+    .doc(FirebaseAuth.instance.currentUser!.uid)
+    .collection('diary')
+    .doc(todayDate)
+    .snapshots();
 
 class SetDate {
   void setDate(DateTime selectedDay) {
+    todayDate = DateFormat('yyyy년 MM월 d일').format(selectedDay);
     displayDate = DateFormat('MM월 d일').format(selectedDay);
+    diary = FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('diary')
+        .doc(todayDate)
+        .snapshots();
   }
 }
 
@@ -84,6 +97,7 @@ bool _defaultImg = true;
 
 class _DiaryPageState extends State<DiaryPage> {
   File? _image;
+  var tf = false;
   firebase_storage.FirebaseStorage firebaseStorage =
       firebase_storage.FirebaseStorage.instance;
 
@@ -95,8 +109,8 @@ class _DiaryPageState extends State<DiaryPage> {
     thanks.add(three.text);
 
     try {
-      _image ??=
-          await urlToFile('https://handong.edu/site/handong/res/img/logo.png');
+      _image ??= await urlToFile(
+          'https://firebasestorage.googleapis.com/v0/b/tiot-2f18b.appspot.com/o/post%2Fdefault.png?alt=media&token=55b7f376-6072-4f57-858d-37616c31cffa');
       // storage 업로드 파일 경로
       final firebaseStorageRef = firebaseStorage
           .ref()
@@ -157,13 +171,6 @@ class _DiaryPageState extends State<DiaryPage> {
     }
   }
 
-  Stream<DocumentSnapshot> diary = FirebaseFirestore.instance
-      .collection('user')
-      .doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection('diary')
-      .doc(todayDate)
-      .snapshots();
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -179,6 +186,7 @@ class _DiaryPageState extends State<DiaryPage> {
                 margin: EdgeInsets.fromLTRB(200, 30, 0, 0),
                 child: IconButton(
                     onPressed: () async {
+                      tf = false;
                       final DateTime? picked = await showDatePicker(
                         context: context,
                         initialDate: selectedDate, // Refer step 1
@@ -260,15 +268,20 @@ class _DiaryPageState extends State<DiaryPage> {
                           Container(
                             width: 240,
                             height: 280,
-                            child: updatedPost['photoUrl'] == ""
-                                ? Image.network(
-                                    'https://firebasestorage.googleapis.com/v0/b/tiot-2f18b.appspot.com/o/post%2Fdefault.png?alt=media&token=55b7f376-6072-4f57-858d-37616c31cffa',
-                                    fit: BoxFit.fill,
+                            child: tf == true
+                                ? Image.file(
+                                    _image!,
+                                    fit: BoxFit.cover,
                                   )
-                                : Image.network(
-                                    updatedPost['photoUrl'],
-                                    fit: BoxFit.fill,
-                                  ),
+                                : updatedPost['photoUrl'] == ""
+                                    ? Image.network(
+                                        'https://firebasestorage.googleapis.com/v0/b/tiot-2f18b.appspot.com/o/post%2Fdefault.png?alt=media&token=55b7f376-6072-4f57-858d-37616c31cffa',
+                                        fit: BoxFit.fill,
+                                      )
+                                    : Image.network(
+                                        updatedPost['photoUrl'],
+                                        fit: BoxFit.fill,
+                                      ),
                           ),
                           Container(
                             alignment: Alignment.topRight,
@@ -276,6 +289,7 @@ class _DiaryPageState extends State<DiaryPage> {
                                 onPressed: () {
                                   // toDo: lost connection error..
                                   pickImage();
+                                  tf = true;
                                 },
                                 icon: Icon(Icons.camera)),
                           ),
