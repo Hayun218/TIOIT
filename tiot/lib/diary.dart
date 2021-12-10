@@ -173,188 +173,194 @@ class _DiaryPageState extends State<DiaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).requestFocus(FocusNode());
-      },
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: EdgeInsets.fromLTRB(200, 30, 0, 0),
-                child: IconButton(
-                    onPressed: () async {
-                      tf = false;
-                      final DateTime? picked = await showDatePicker(
-                        context: context,
-                        initialDate: selectedDate, // Refer step 1
-                        firstDate: DateTime(2021, 11, 20),
-                        lastDate: DateTime.now(),
-                      );
+    final isKeyboard = MediaQuery.of(context).viewInsets.bottom != 0;
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Stack(
+          children: [
+            ListView(
+              shrinkWrap: true,
+              children: [
+                Container(
+                  margin: EdgeInsets.fromLTRB(200, 30, 0, 0),
+                  child: IconButton(
+                      onPressed: () async {
+                        tf = false;
+                        final DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate, // Refer step 1
+                          firstDate: DateTime(2021, 11, 20),
+                          lastDate: DateTime.now(),
+                        );
 
-                      if (picked != null && picked != selectedDate) {
-                        setState(() {
-                          selectedDate = picked;
-                          todayDate =
-                              DateFormat('yyyy년 MM월 d일').format(selectedDate);
-                          addDiary(FirebaseAuth.instance.currentUser!.uid);
+                        if (picked != null && picked != selectedDate) {
+                          setState(() {
+                            selectedDate = picked;
+                            todayDate =
+                                DateFormat('yyyy년 MM월 d일').format(selectedDate);
+                            addDiary(FirebaseAuth.instance.currentUser!.uid);
 
-                          displayDate =
-                              DateFormat('MM월 d일').format(selectedDate);
-                        });
-                      }
-                      diary = FirebaseFirestore.instance
-                          .collection('user')
-                          .doc(FirebaseAuth.instance.currentUser!.uid)
-                          .collection('diary')
-                          .doc(todayDate)
-                          .snapshots();
-                    },
-                    icon: Icon(Icons.calendar_today)),
-              ),
-              Container(
-                child: Center(
-                  child: Text(
-                    displayDate + " 감사일기",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
+                            displayDate =
+                                DateFormat('MM월 d일').format(selectedDate);
+                          });
+                        }
+                        diary = FirebaseFirestore.instance
+                            .collection('user')
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .collection('diary')
+                            .doc(todayDate)
+                            .snapshots();
+                      },
+                      icon: Icon(Icons.calendar_today)),
+                ),
+                Container(
+                  child: Center(
+                    child: Text(
+                      displayDate + " 감사일기",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 30),
-              StreamBuilder<DocumentSnapshot>(
-                stream: diary,
-                builder: (BuildContext context,
-                    AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  DocumentSnapshot updatedPost;
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
-                  if (!snapshot.hasData) {
-                    addDiary(FirebaseAuth.instance.currentUser!.uid);
-
-                    return LoadingFlipping.circle();
-                  } else {
-                    updatedPost = snapshot.data!;
-                    List<String> data =
-                        List<String>.from(snapshot.data!['thanks']);
-                    print("hello");
-                    print(snapshot.data!['photoUrl']);
-
-                    TextEditingController _thanks1 = TextEditingController();
-                    TextEditingController _thanks2 = TextEditingController();
-                    TextEditingController _thanks3 = TextEditingController();
-
-                    if (data.isNotEmpty && data[0].isNotEmpty) {
-                      _thanks1 = TextEditingController(
-                          text: snapshot.data!['thanks'][0]);
+                SizedBox(height: 30),
+                StreamBuilder<DocumentSnapshot>(
+                  stream: diary,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    DocumentSnapshot updatedPost;
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
                     }
-                    if (data.isNotEmpty && data[1].isNotEmpty) {
-                      _thanks2 = TextEditingController(
-                          text: snapshot.data!['thanks'][1]);
-                    }
-                    if (data.isNotEmpty && data[2].isNotEmpty) {
-                      _thanks3 = TextEditingController(
-                          text: snapshot.data!['thanks'][2]);
-                    }
-                    return Container(
-                      margin: EdgeInsets.fromLTRB(40, 0, 40, 0),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 240,
-                            height: 280,
-                            child: tf == true
-                                ? Image.file(
-                                    _image!,
-                                    fit: BoxFit.cover,
-                                  )
-                                : updatedPost['photoUrl'] == ""
-                                    ? Image.network(
-                                        'https://firebasestorage.googleapis.com/v0/b/tiot-2f18b.appspot.com/o/post%2Fdefault.png?alt=media&token=55b7f376-6072-4f57-858d-37616c31cffa',
-                                        fit: BoxFit.fill,
+                    if (!snapshot.hasData) {
+                      addDiary(FirebaseAuth.instance.currentUser!.uid);
+
+                      return LoadingFlipping.circle();
+                    } else {
+                      updatedPost = snapshot.data!;
+                      List<String> data =
+                          List<String>.from(snapshot.data!['thanks']);
+                      print("hello");
+                      print(snapshot.data!['photoUrl']);
+
+                      TextEditingController _thanks1 = TextEditingController();
+                      TextEditingController _thanks2 = TextEditingController();
+                      TextEditingController _thanks3 = TextEditingController();
+
+                      if (data.isNotEmpty && data[0].isNotEmpty) {
+                        _thanks1 = TextEditingController(
+                            text: snapshot.data!['thanks'][0]);
+                      }
+                      if (data.isNotEmpty && data[1].isNotEmpty) {
+                        _thanks2 = TextEditingController(
+                            text: snapshot.data!['thanks'][1]);
+                      }
+                      if (data.isNotEmpty && data[2].isNotEmpty) {
+                        _thanks3 = TextEditingController(
+                            text: snapshot.data!['thanks'][2]);
+                      }
+                      return Container(
+                        margin: EdgeInsets.fromLTRB(40, 0, 40, 0),
+                        child: Column(
+                          children: [
+                            if (!isKeyboard)
+                              Container(
+                                width: 240,
+                                height: 280,
+                                child: tf == true
+                                    ? Image.file(
+                                        _image!,
+                                        fit: BoxFit.cover,
                                       )
-                                    : Image.network(
-                                        updatedPost['photoUrl'],
-                                        fit: BoxFit.fill,
-                                      ),
-                          ),
-                          Container(
-                            alignment: Alignment.topRight,
-                            child: IconButton(
+                                    : updatedPost['photoUrl'] == ""
+                                        ? Image.network(
+                                            'https://firebasestorage.googleapis.com/v0/b/tiot-2f18b.appspot.com/o/post%2Fdefault.png?alt=media&token=55b7f376-6072-4f57-858d-37616c31cffa',
+                                            fit: BoxFit.fill,
+                                          )
+                                        : Image.network(
+                                            updatedPost['photoUrl'],
+                                            fit: BoxFit.fill,
+                                          ),
+                              ),
+                            if (!isKeyboard)
+                              Container(
+                                alignment: Alignment.topRight,
+                                child: IconButton(
+                                    onPressed: () {
+                                      // toDo: lost connection error..
+                                      pickImage();
+                                      tf = true;
+                                    },
+                                    icon: Icon(Icons.camera)),
+                              ),
+                            TextField(
+                              decoration: InputDecoration(
+                                labelText: '1st Thanks',
+                              ),
+                              keyboardType: TextInputType.multiline,
+                              controller: _thanks1,
+                              maxLines: 1,
+                              minLines: 1,
+                            ),
+                            TextField(
+                              decoration: InputDecoration(
+                                labelText: '2nd Thanks',
+                              ),
+                              keyboardType: TextInputType.multiline,
+                              controller: _thanks2,
+                              maxLines: 1,
+                              minLines: 1,
+                            ),
+                            TextField(
+                              decoration: InputDecoration(
+                                labelText: '3rd Thanks',
+                              ),
+                              keyboardType: TextInputType.multiline,
+                              controller: _thanks3,
+                              maxLines: 1,
+                              minLines: 1,
+                            ),
+                            TextButton(
                                 onPressed: () {
-                                  // toDo: lost connection error..
-                                  pickImage();
-                                  tf = true;
+                                  saveThanks(_thanks1, _thanks2, _thanks3,
+                                      FirebaseAuth.instance.currentUser!.uid);
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
                                 },
-                                icon: Icon(Icons.camera)),
-                          ),
-                          TextField(
-                            decoration: InputDecoration(
-                              labelText: '1st Thanks',
-                            ),
-                            keyboardType: TextInputType.multiline,
-                            controller: _thanks1,
-                            maxLines: 1,
-                            minLines: 1,
-                          ),
-                          TextField(
-                            decoration: InputDecoration(
-                              labelText: '2nd Thanks',
-                            ),
-                            keyboardType: TextInputType.multiline,
-                            controller: _thanks2,
-                            maxLines: 1,
-                            minLines: 1,
-                          ),
-                          TextField(
-                            decoration: InputDecoration(
-                              labelText: '3rd Thanks',
-                            ),
-                            keyboardType: TextInputType.multiline,
-                            controller: _thanks3,
-                            maxLines: 1,
-                            minLines: 1,
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                saveThanks(_thanks1, _thanks2, _thanks3,
-                                    FirebaseAuth.instance.currentUser!.uid);
-                                FocusScope.of(context)
-                                    .requestFocus(FocusNode());
-                              },
-                              child: Text("저장")),
-                        ],
-                      ),
-                    );
-                  }
-                },
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: IconButton(
-                  icon: Icon(
-                    Icons.library_books_rounded,
-                    size: 30,
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                LongDiary(selectedDate: todayDate)));
-                  }),
+                                child: Text("저장")),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
-          ),
-        ],
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: IconButton(
+                    icon: Icon(
+                      Icons.library_books_rounded,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  LongDiary(selectedDate: todayDate)));
+                    }),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
